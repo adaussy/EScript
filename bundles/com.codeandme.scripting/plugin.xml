@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension-point id="language" name="Language" schema="schema/language.exsd"/>
+   <extension
+         point="org.eclipse.ui.services">
+      <serviceFactory
+            factoryClass="com.codeandme.scripting.service.ScriptServiceFactory">
+         <service
+               serviceClass="com.codeandme.scripting.IScriptService"></service>
+      </serviceFactory>
+   </extension>
+   <extension
+         point="org.eclipse.core.runtime.adapters">
+      <factory
+            adaptableType="org.eclipse.core.resources.IFile"
+            class="com.codeandme.scripting.adapters.ScriptableAdapter">
+         <adapter
+               type="com.codeandme.scripting.IScriptable">
+         </adapter>
+      </factory>
+      <factory
+            adaptableType="java.io.File"
+            class="com.codeandme.scripting.adapters.ScriptableAdapter">
+         <adapter
+               type="com.codeandme.scripting.IScriptable">
+         </adapter>
+      </factory>
+   </extension>
+
+</plugin>
