@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension
+         point="org.eclipse.debug.ui.launchConfigurationTabGroups">
+      <launchConfigurationTabGroup
+            class="com.codeandme.scripting.javascript.rhino.ui.launching.LaunchConfigurationTabGroup"
+            id="com.codeandme.launchConfigurationTabGroup.rhino"
+            type="com.codeandme.launchConfigurationType.rhino">
+         <launchMode
+               mode="debug"
+               perspective="org.eclipse.debug.ui.DebugPerspective">
+         </launchMode>
+         <launchMode
+               mode="run">
+         </launchMode>
+      </launchConfigurationTabGroup>
+   </extension>
+   <extension
+         point="org.eclipse.debug.ui.launchConfigurationTypeImages">
+      <launchConfigurationTypeImage
+            configTypeID="com.codeandme.launchConfigurationType.rhino"
+            icon="images/rhino.gif"
+            id="com.codeandme.launchConfigurationTypeImage.rhino">
+      </launchConfigurationTypeImage>
+   </extension>
+   <extension
+         point="org.eclipse.debug.ui.launchShortcuts">
+      <shortcut
+            class="com.codeandme.scripting.javascript.rhino.ui.launching.JavaScriptLaunchShortcut"
+            description="Run a JavaScript file"
+            icon="images/rhino.gif"
+            id="com.codeandme.launchShortcut.rhino"
+            label="Rhino JavaScript"
+            modes="run,debug">
+         <contextualLaunch>
+            <enablement>
+               <count
+                     value="1">
+               </count>
+               <iterate
+                     ifEmpty="false"
+                     operator="or">
+                  <test
+                        property="org.eclipse.debug.ui.matchesPattern"
+                        value="js">
+                  </test>
+               </iterate>
+            </enablement>
+         </contextualLaunch>
+      </shortcut>
+   </extension>
+   <extension
+         point="org.eclipse.debug.core.launchConfigurationTypes">
+      <launchConfigurationType
+            delegate="com.codeandme.scripting.javascript.rhino.ui.launching.LaunchDelegate"
+            id="com.codeandme.launchConfigurationType.rhino"
+            modes="run,debug"
+            name="Rhino JavaScript"
+            sourceLocatorId="org.eclipse.wst.jsdt.debug.rhino.ui.source.locator"
+            sourcePathComputerId="org.eclipse.wst.jsdt.debug.rhino.ui.source.path.computer">
+      </launchConfigurationType>
+   </extension>
+
+</plugin>

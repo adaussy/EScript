@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension
+         point="com.codeandme.scripting.javascript.module">
+      <instance
+            class="com.codeandme.scripting.javascript.samplemodule.SampleModule"
+            documentation="false"
+            name="Sample"
+            visible="true">
+      </instance>
+   </extension>
+
+</plugin>

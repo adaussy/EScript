@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension
+         point="com.codeandme.scripting.language">
+      <scriptType
+            type="JavaScript">
+      </scriptType>
+      <engine
+            class="com.codeandme.scripting.javascript.rhino.RhinoScriptEngine"
+            id="com.codeandme.scripting.javascript.rhino"
+            name="JavaScript (Rhino)"
+            priority="10">
+         <supportedScriptType
+               type="JavaScript">
+         </supportedScriptType>
+      </engine>
+      <engine
+            class="com.codeandme.scripting.javascript.rhino.debugger.RhinoScriptDebugEngine"
+            id="com.codeandme.scripting.javascript.rhino.debug"
+            name="JavaScript Debug"
+            priority="1">
+         <supportedScriptType
+               type="JavaScript">
+         </supportedScriptType>
+      </engine>
+   </extension>
+
+</plugin>
