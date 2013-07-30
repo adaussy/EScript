@@ -1,4 +1,4 @@
-package com.codeandme.scripting.javascript.rhino;
+package com.codeandme.scripting.ruby.jruby;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -8,7 +8,7 @@ import java.util.regex.Pattern;
 import com.codeandme.scripting.modules.EnvironmentModule;
 import com.codeandme.scripting.modules.IModuleWrapper;
 
-public class RhinoModuleWrapper implements IModuleWrapper {
+public class JRubyModuleWrapper implements IModuleWrapper {
 
     @Override
     public String getSaveVariableName(final String variableName) {
@@ -19,7 +19,7 @@ public class RhinoModuleWrapper implements IModuleWrapper {
     public String createFunctionWrapper(final String moduleVariable, final Method method, final Set<String> functionNames, final String resultName,
             final String preExecutionCode, final String postExecutionCode) {
 
-        StringBuilder javaScriptCode = new StringBuilder();
+        StringBuilder rubyScriptCode = new StringBuilder();
 
         // use reflection to access methods
 
@@ -39,9 +39,9 @@ public class RhinoModuleWrapper implements IModuleWrapper {
             parameters.replace(0, 2, "");
 
         // insert method call
-        body.append("\tvar ");
+        body.append("\t$");
         body.append(resultName);
-        body.append(" = ");
+        body.append(" = $");
         body.append(moduleVariable);
         body.append(".");
         body.append(method.getName());
@@ -53,46 +53,45 @@ public class RhinoModuleWrapper implements IModuleWrapper {
         body.append(postExecutionCode);
 
         // insert return statement
-        body.append("\treturn ");
+        body.append("\treturn $");
         body.append(resultName);
         body.append(";\n");
 
         for (String name : functionNames) {
             if (!name.isEmpty()) {
-                javaScriptCode.append("function ");
-                javaScriptCode.append(name);
-                javaScriptCode.append("(");
-                javaScriptCode.append(parameters);
-                javaScriptCode.append(") {\n");
-                javaScriptCode.append(body);
-                javaScriptCode.append("}\n");
+                rubyScriptCode.append("def ");
+                rubyScriptCode.append(name);
+                rubyScriptCode.append("(");
+                rubyScriptCode.append(parameters);
+                rubyScriptCode.append(")\n");
+                rubyScriptCode.append(body);
+                rubyScriptCode.append("end\n");
             }
         }
 
-        return javaScriptCode.toString();
+        return rubyScriptCode.toString();
     }
 
     @Override
     public String getConstantDefinition(final String name, final Field field) {
-        return "const " + getSaveName(name) + " = Packages." + field.getDeclaringClass().getName() + "." + field.getName() + ";\n";
+        return name.substring(0, 1).toUpperCase() + name.substring(1) + " = " + field.getClass().getName() + "." + field.getName();
     }
 
     @Override
     public String getEnvironmentModuleName() {
-        return EnvironmentModule.getRegisteredModuleName(EnvironmentModule.ENVIRONMENT_MODULE_NAME);
+        return "$" + EnvironmentModule.getRegisteredModuleName(EnvironmentModule.ENVIRONMENT_MODULE_NAME);
     }
 
     @Override
     public String getVariableDefinition(final String name, final String content) {
-        return "var " + getSaveName(name) + " = " + content + ";";
+        return "$" + name + " = " + content;
     }
 
     @Override
     public String classInstantiation(final Class<?> clazz, final String[] parameters) {
         StringBuilder code = new StringBuilder();
-        code.append("new Packages.");
         code.append(clazz.getName());
-        code.append("(");
+        code.append(".new(");
 
         if (parameters != null) {
             for (String parameter : parameters) {

@@ -259,9 +259,9 @@ public class EnvironmentModule extends AbstractScriptModule implements IScriptMo
     // }
     //
     /**
-     * Include and execute a JavaScript file. Quite similar to execute(Object) a source file is opened and its content is executed. Multiple sources are
-     * available: "workspace://" opens a file relative to the workspace root, "project://" opens a file relative to the current project, "file://" opens a file
-     * from the file system.
+     * Include and execute a script file. Quite similar to eval(Object) a source file is opened and its content is executed. Multiple sources are available:
+     * "workspace://" opens a file relative to the workspace root, "project://" opens a file relative to the current project, "file://" opens a file from the
+     * file system.
      * 
      * @param filename
      *            name of file to be included

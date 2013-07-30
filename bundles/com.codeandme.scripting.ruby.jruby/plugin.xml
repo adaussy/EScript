@@ -8,8 +8,17 @@
       </scriptType>
       <engine
             class="com.codeandme.scripting.ruby.jruby.JRubyScriptEngine"
-            id="com.codeandme.scripting.ruby.jruby.engine">
+            id="com.codeandme.scripting.ruby.jruby.engine"
+            name="JRuby">
       </engine>
+      <launchExtension
+            class="com.codeandme.scripting.modules.BootStrapper"
+            engineID="com.codeandme.scripting.ruby.jruby.engine">
+      </launchExtension>
+      <moduleWrapper
+            class="com.codeandme.scripting.ruby.jruby.JRubyModuleWrapper"
+            engineID="com.codeandme.scripting.ruby.jruby.engine">
+      </moduleWrapper>
    </extension>
 
 </plugin>

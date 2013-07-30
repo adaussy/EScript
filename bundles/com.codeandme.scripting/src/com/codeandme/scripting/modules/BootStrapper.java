@@ -13,9 +13,8 @@ public class BootStrapper implements IScriptEngineLaunchExtension {
     public void createEngine(final IScriptEngine engine) {
         IModuleWrapper wrapper = getWrapper(engine.getID());
         if (wrapper != null) {
-            String code = wrapper.classInstantiation(EnvironmentModule.class, new String[0]);
             StringBuilder stringBuilder = new StringBuilder();
-            stringBuilder.append(code);
+            stringBuilder.append(wrapper.classInstantiation(EnvironmentModule.class, new String[0]));
             stringBuilder.append(".loadModule(\"");
             stringBuilder.append(EnvironmentModule.ENVIRONMENT_MODULE_NAME);
             stringBuilder.append("\");");

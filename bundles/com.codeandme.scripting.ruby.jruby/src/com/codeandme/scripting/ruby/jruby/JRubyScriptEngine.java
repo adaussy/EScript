@@ -6,8 +6,9 @@ import org.jruby.embed.LocalVariableBehavior;
 import org.jruby.embed.ScriptingContainer;
 
 import com.codeandme.scripting.AbstractScriptEngine;
+import com.codeandme.scripting.IModifiableScriptEngine;
 
-public class JRubyScriptEngine extends AbstractScriptEngine {
+public class JRubyScriptEngine extends AbstractScriptEngine implements IModifiableScriptEngine {
 
     private ScriptingContainer mEngine;
 
@@ -45,5 +46,15 @@ public class JRubyScriptEngine extends AbstractScriptEngine {
     @Override
     protected Object execute(final InputStream code, final Object reference, final String fileName) throws Exception {
         return mEngine.runScriptlet(code, fileName);
+    }
+
+    @Override
+    public void setVariable(final String name, final Object content) {
+        mEngine.put(name.startsWith("$") ? name : "$" + name, content);
+    }
+
+    @Override
+    public Object getVariable(final String name) {
+        return mEngine.get(name.startsWith("$") ? name : "$" + name);
     }
 }

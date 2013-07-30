@@ -245,3 +245,5 @@ Export-Package: com.headius.invokebinder,
  org.yecht.debug,
  org.yecht.ruby
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Eclipse-BuddyPolicy: global
+
