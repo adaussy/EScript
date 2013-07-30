@@ -79,7 +79,7 @@ public class RhinoModuleWrapper implements IModuleWrapper {
 
     @Override
     public String getEnvironmentModuleName() {
-        return EnvironmentModule.getRegisteredModuleName(EnvironmentModule.NAME);
+        return EnvironmentModule.getRegisteredModuleName(EnvironmentModule.ENVIRONMENT_MODULE_NAME);
     }
 
     @Override

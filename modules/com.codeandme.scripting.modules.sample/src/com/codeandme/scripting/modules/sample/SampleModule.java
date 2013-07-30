@@ -1,4 +1,4 @@
-package com.codeandme.scripting.javascript.samplemodule;
+package com.codeandme.scripting.modules.sample;
 
 import java.util.regex.Pattern;
 

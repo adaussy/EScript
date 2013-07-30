@@ -5,6 +5,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -21,19 +22,11 @@ import com.codeandme.scripting.service.ScriptService;
  */
 public class EnvironmentModule extends AbstractScriptModule implements IScriptModule {
 
-    public static final String NAME = "Environment";
+    public static final String ENVIRONMENT_MODULE_NAME = "Environment";
 
     private final List<IScriptModule> mModules = new ArrayList<IScriptModule>();
 
     private final ListenerList mModuleListeners = new ListenerList();
-
-    public EnvironmentModule() {
-        super();
-    }
-
-    public EnvironmentModule(final String bootstrap) {
-
-    }
 
     /**
      * Load a module. Loading a module generally enhances the JavaScript environment with new functions and variables. If a module was already loaded before, it
@@ -69,9 +62,9 @@ public class EnvironmentModule extends AbstractScriptModule implements IScriptMo
                 // register new variable in script engine
                 if (getScriptEngine() instanceof IModifiableScriptEngine) {
                     // engine supports direct setting of variables
-                    IScriptModule instance = definition.getModuleInstance();
-                    if (instance != null)
-                        ((IModifiableScriptEngine) getScriptEngine()).setVariable(getRegisteredModuleName(definition.getName()), instance);
+                    module = definition.getModuleInstance();
+                    if (module != null)
+                        ((IModifiableScriptEngine) getScriptEngine()).setVariable(getRegisteredModuleName(definition.getName()), module);
 
                     else
                         // could not create instance, bail out
@@ -96,27 +89,14 @@ public class EnvironmentModule extends AbstractScriptModule implements IScriptMo
             reLoaded = true;
 
             // move module up to first position
-            for (IScriptModule existingModule : mModules) {
-                if (existingModule.getModuleName().equals(moduleIdentifier)) {
-                    mModules.remove(existingModule);
-                    addModule(existingModule);
-                    break;
-                }
-            }
+            addModule(module);
         }
 
-        // load wrappers after adding the module to the list. This way a module can add an IScriptFunctionModifier which will be applied to itself
-        if ((mModules.isEmpty()) && (NAME.equals(moduleIdentifier))) {
-            // environment module is loaded, as it cannot register on itself, help it a little
-            createWrappers(this, false);
+        // create functino wrappers
+        createWrappers(module, reLoaded);
 
-        } else {
-            // some other module is loaded
-            createWrappers(mModules.get(0), reLoaded);
-
-            // notify listeners
-            fireModuleEvent(module, reLoaded ? IModuleListener.RELOADED : IModuleListener.LOADED);
-        }
+        // notify listeners
+        fireModuleEvent(module, reLoaded ? IModuleListener.RELOADED : IModuleListener.LOADED);
 
         return module;
     }
@@ -229,8 +209,8 @@ public class EnvironmentModule extends AbstractScriptModule implements IScriptMo
         return null;
     }
 
-    public final List<IScriptModule> getLoadedModules() {
-        return mModules;
+    private final List<IScriptModule> getLoadedModules() {
+        return Collections.unmodifiableList(mModules);
     }
 
     // /**

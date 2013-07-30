@@ -4,7 +4,7 @@
    <extension
          point="com.codeandme.scripting.language">
       <module
-            class="com.codeandme.scripting.javascript.samplemodule.SampleModule"
+            class="com.codeandme.scripting.modules.sample.SampleModule"
             documentation="true"
             name="Sample"
             visible="true">
