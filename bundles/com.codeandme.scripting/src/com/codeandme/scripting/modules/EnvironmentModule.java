@@ -14,7 +14,6 @@ import java.util.Set;
 import org.eclipse.core.runtime.ListenerList;
 
 import com.codeandme.scripting.IModifiableScriptEngine;
-import com.codeandme.scripting.service.ModuleDefinition;
 import com.codeandme.scripting.service.ScriptService;
 
 /**
@@ -43,7 +42,7 @@ public class EnvironmentModule extends AbstractScriptModule implements IScriptMo
         IScriptModule module = findModule(moduleIdentifier);
         if (module == null) {
             // not yet loaded
-            Map<String, ModuleDefinition> availableModules = ScriptService.getAvailableModules();
+            Map<String, ModuleDefinition> availableModules = ScriptService.getInstance().getAvailableModules();
 
             ModuleDefinition definition = availableModules.get(moduleIdentifier);
             if (definition != null) {

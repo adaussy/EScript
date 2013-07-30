@@ -92,9 +92,11 @@ public class ScriptShell extends ViewPart implements IMacroSupport, IPropertyCha
     private MacroComposite mMacroComposite;
 
     static {
-        // add dynamic context menu for module loading
+        // add dynamic context menu for engine switching
         EngineContributionFactory.addContextMenu();
 
+        // add dynamic context menu for module loading
+        ModuleContributionFactory.addContextMenu();
     }
 
     /**

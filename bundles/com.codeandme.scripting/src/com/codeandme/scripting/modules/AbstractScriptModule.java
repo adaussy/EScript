@@ -7,7 +7,6 @@ import org.eclipse.core.runtime.jobs.Job;
 import com.codeandme.scripting.IModifiableScriptEngine;
 import com.codeandme.scripting.IScriptEngine;
 import com.codeandme.scripting.ScriptResult;
-import com.codeandme.scripting.service.ModuleDefinition;
 import com.codeandme.scripting.service.ScriptService;
 
 public abstract class AbstractScriptModule implements IScriptModule {
@@ -16,7 +15,8 @@ public abstract class AbstractScriptModule implements IScriptModule {
     private EnvironmentModule mEnvironmentModule = null;
 
     public AbstractScriptModule() {
-        Map<String, ModuleDefinition> modules = ScriptService.getAvailableModules();
+
+        Map<String, ModuleDefinition> modules = ScriptService.getInstance().getAvailableModules();
         for (ModuleDefinition definition : modules.values()) {
             if (definition.getModuleClassName().equals(this.getClass().getName())) {
                 mName = definition.getName();

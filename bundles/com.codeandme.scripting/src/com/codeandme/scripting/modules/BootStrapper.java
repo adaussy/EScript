@@ -1,10 +1,8 @@
 package com.codeandme.scripting.modules;
 
-import org.eclipse.ui.PlatformUI;
-
 import com.codeandme.scripting.IScriptEngine;
 import com.codeandme.scripting.IScriptEngineLaunchExtension;
-import com.codeandme.scripting.IScriptService;
+import com.codeandme.scripting.service.ScriptService;
 
 /**
  * The RhinoEnvironment provides base functions for all JavaScript interpreters. It is automatically loaded by any interpreter upon startup.
@@ -27,10 +25,6 @@ public class BootStrapper implements IScriptEngineLaunchExtension {
     }
 
     public static IModuleWrapper getWrapper(final String engineID) {
-        IScriptService scriptService = (IScriptService) PlatformUI.getWorkbench().getService(IScriptService.class);
-        if (scriptService != null)
-            return scriptService.getModuleWrapper(engineID);
-
-        return null;
+        return ScriptService.getInstance().getModuleWrapper(engineID);
     }
 }

@@ -1,4 +1,4 @@
-package com.codeandme.scripting.service;
+package com.codeandme.scripting.modules;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -7,9 +7,9 @@ import java.util.Set;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
 
-import com.codeandme.scripting.modules.IScriptModule;
-
 public class ModuleDefinition {
+
+    private static final String VISIBLE = "visible";
 
     private static final String DEPENDENCY = "dependency";
 
@@ -51,5 +51,9 @@ public class ModuleDefinition {
         }
 
         return null;
+    }
+
+    public boolean isVisible() {
+        return Boolean.parseBoolean(mConfig.getAttribute(VISIBLE));
     }
 }

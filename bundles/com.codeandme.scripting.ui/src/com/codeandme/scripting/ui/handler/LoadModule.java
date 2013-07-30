@@ -1,4 +1,4 @@
-package com.codeandme.scripting.javascript.rhino.ui.commands;
+package com.codeandme.scripting.ui.handler;
 
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;

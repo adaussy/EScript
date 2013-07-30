@@ -21,6 +21,7 @@ import com.codeandme.scripting.IScriptEngine;
 import com.codeandme.scripting.IScriptEngineLaunchExtension;
 import com.codeandme.scripting.IScriptService;
 import com.codeandme.scripting.modules.IModuleWrapper;
+import com.codeandme.scripting.modules.ModuleDefinition;
 
 public class ScriptService implements IScriptService {
 
@@ -162,7 +163,8 @@ public class ScriptService implements IScriptService {
         return null;
     }
 
-    public static Map<String, ModuleDefinition> getAvailableModules() {
+    @Override
+    public Map<String, ModuleDefinition> getAvailableModules() {
 
         Map<String, ModuleDefinition> modules = new HashMap<String, ModuleDefinition>();
 
