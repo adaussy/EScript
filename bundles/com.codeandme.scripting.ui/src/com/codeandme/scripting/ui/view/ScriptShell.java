@@ -1,3 +1,13 @@
+/*******************************************************************************
+ * Copyright (c) 2013 Christian Pontesegger and others.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *     Christian Pontesegger - initial API and implementation
+ *******************************************************************************/
 package com.codeandme.scripting.ui.view;
 
 import java.io.IOException;
@@ -142,7 +152,7 @@ public class ScriptShell extends ViewPart implements IMacroSupport, IPropertyCha
      */
     private void configureOutputStreams() {
 
-        final IEclipsePreferences prefs = InstanceScope.INSTANCE.getNode("com.infineon.javascript.shell");
+        final IEclipsePreferences prefs = InstanceScope.INSTANCE.getNode(PreferenceConstants.SHELL_BASE);
 
         // set stdout stream
         final String target = prefs.get(PreferenceConstants.TARGET_STDOUT, PreferenceConstants.VALUE_OUTPUT_CONSOLE);
@@ -292,7 +302,7 @@ public class ScriptShell extends ViewPart implements IMacroSupport, IPropertyCha
         ShellDropTarget.addDropSupport(mOutputText, mScriptEngine);
 
         // run startup commands
-        final IEclipsePreferences prefs = InstanceScope.INSTANCE.getNode("com.infineon.javascript.ui");
+        final IEclipsePreferences prefs = InstanceScope.INSTANCE.getNode(PreferenceConstants.SHELL_BASE);
         final String initCommands = prefs.get(PreferenceConstants.INIT_COMMANDS, "");
         if ((initCommands != null) && (!initCommands.isEmpty()))
             mScriptEngine.executeAsync(initCommands);

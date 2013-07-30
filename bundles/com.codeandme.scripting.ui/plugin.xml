@@ -146,7 +146,7 @@
             allPopups="false"
             locationURI="toolbar:org.eclipse.ui.console.ConsoleView">
          <command
-               commandId="com.infineon.command.script.stop"
+               commandId="com.codeandme.commands.scriptShell.stop"
                icon="platform:/plugin/org.eclipse.debug.ui/icons/full/elcl16/terminate_co.gif"
                style="push">
          </command>

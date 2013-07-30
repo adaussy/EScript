@@ -1,16 +1,13 @@
 /*******************************************************************************
- * Copyright (c) 2011 Infineon Technologies Austria AG
+ * Copyright (c) 2013 Christian Pontesegger and others.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *     Christian Pontesegger - initial version
- *     
- * Version Control:
- *     Last edited by: $Author: pontesegger $
- *     Date:           $Date: 2012-05-11 10:32:42 +0200 (Fr, 11 Mai 2012) $
- *     Revision:       $Revision: 791 $
- *     Head URL:       $URL: https://grzw2b4ph2j.eu.infineon.com/svn/Eclipse_RCP/trunk/bundles/com.infineon.javascript/src/com/infineon/javascript/internal/RhinoClassLoader.java $
+ *     Christian Pontesegger - initial API and implementation
  *******************************************************************************/
-
 package com.codeandme.scripting.javascript.rhino;
 
 import java.net.URL;

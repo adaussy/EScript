@@ -1,16 +1,13 @@
 /*******************************************************************************
- * Copyright (c) 2011 Infineon Technologies Austria AG
+ * Copyright (c) 2013 Christian Pontesegger and others.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *     Christian Pontesegger - initial version
- *     
- * Version Control:
- *     Last edited by: $Author: pontesegger $
- *     Date:           $Date: 2011-09-23 11:32:45 +0200 (Fr, 23 Sep 2011) $
- *     Revision:       $Revision: 398 $
- *     Head URL:       $URL: https://grzw2b4ph2j.eu.infineon.com/svn/Eclipse_RCP/trunk/bundles/com.infineon.script/src/com/infineon/script/ScriptResult.java $
+ *     Christian Pontesegger - initial API and implementation
  *******************************************************************************/
-
 package com.codeandme.scripting;
 
 /**

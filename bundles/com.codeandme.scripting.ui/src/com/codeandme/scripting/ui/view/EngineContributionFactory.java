@@ -1,3 +1,13 @@
+/*******************************************************************************
+ * Copyright (c) 2013 Christian Pontesegger and others.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *     Christian Pontesegger - initial API and implementation
+ *******************************************************************************/
 package com.codeandme.scripting.ui.view;
 
 import java.util.ArrayList;
@@ -70,7 +80,7 @@ public class EngineContributionFactory extends AbstractContributionFactory {
                 contributionParameter.parameters = parameters;
                 contributionParameter.label = description.getName();
                 contributionParameter.visibleEnabled = true;
-//                contributionParameter.icon = activator.getImageDescriptor("com.infineon.javascript.ui", "/images/library.png", true);
+//                contributionParameter.icon = activator.getImageDescriptor("/images/library.png", true);
 
                 items.add(contributionParameter);
             }

@@ -1,14 +1,12 @@
 /*******************************************************************************
- * Copyright (c) 2011 Infineon Technologies Austria AG
+ * Copyright (c) 2013 Christian Pontesegger and others.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *     Christian Pontesegger - initial version
- *     
- * Version Control:
- *     Last edited by: $Author: pontesegger $
- *     Date:           $Date: 2012-10-08 14:03:01 +0200 (Mo, 08 Okt 2012) $
- *     Revision:       $Revision: 1757 $
- *     Head URL:       $URL: https://grzw2b4ph2j.eu.infineon.com/svn/Eclipse_RCP/trunk/bundles/com.infineon.script.macro/src/com/infineon/script/macro/Macro.java $
+ *     Christian Pontesegger - initial API and implementation
  *******************************************************************************/
 package com.codeandme.scripting.ui.macro;
 

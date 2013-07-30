@@ -1,9 +1,9 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: Sample
+Bundle-Name: EScript - Sample module
 Bundle-SymbolicName: com.codeandme.scripting.modules.sample;singleton:=true
 Bundle-Version: 1.0.0.qualifier
-Bundle-Vendor: CODEANDME
+Bundle-Vendor: Code & me
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Require-Bundle: com.codeandme.scripting,
  org.eclipse.jface;bundle-version="3.9.0",
