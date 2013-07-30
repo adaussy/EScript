@@ -1,8 +1,12 @@
 package com.codeandme.scripting.modules;
 
+import java.io.File;
+import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -11,8 +15,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.ListenerList;
+import org.eclipse.core.runtime.Path;
 
+import com.codeandme.scripting.ExitException;
 import com.codeandme.scripting.IModifiableScriptEngine;
 import com.codeandme.scripting.service.ScriptService;
 
@@ -20,6 +28,10 @@ import com.codeandme.scripting.service.ScriptService;
  * The RhinoEnvironment provides base functions for all JavaScript interpreters. It is automatically loaded by any interpreter upon startup.
  */
 public class EnvironmentModule extends AbstractScriptModule implements IScriptModule {
+
+    private static final String PROJECT = "project://";
+
+    private static final String WORKSPACE = "workspace://";
 
     public static final String ENVIRONMENT_MODULE_NAME = "Environment";
 
@@ -212,30 +224,29 @@ public class EnvironmentModule extends AbstractScriptModule implements IScriptMo
         return Collections.unmodifiableList(mModules);
     }
 
-    // /**
-    // * Execute JavaScript code. This method executes JavaScript code directly in the Rhino interpreter. Execution is done in the same thread as the caller
-    // * thread.
-    // *
-    // * @param data
-    // * JavaScript code to be interpreted
-    // * @return result of code execution
-    // */
-    // @WrapToScript
-    // public final Object execute(final Object data) {
-    // return getScriptEngine().inject(data);
-    // }
-    //
-    // /**
-    // * Terminates script execution immediately. Code following this command will not be executed anymore.
-    // *
-    // * @param value
-    // * return code
-    // */
-    // @WrapToScript
-    // public final void exit(final Object value) {
-    // throw new ExitException(value);
-    // }
-    //
+    /**
+     * Execute script code. This method executes script code directly in the running interpreter. Execution is done in the same thread as the caller thread.
+     * 
+     * @param data
+     *            code to be interpreted
+     * @return result of code execution
+     */
+    @WrapToScript
+    public final Object eval(final Object data) {
+        return getScriptEngine().inject(data);
+    }
+
+    /**
+     * Terminates script execution immediately. Code following this command will not be executed anymore.
+     * 
+     * @param value
+     *            return code
+     */
+    @WrapToScript
+    public final void exit(final Object value) {
+        throw new ExitException(value);
+    }
+
     // /**
     // * Terminates execution of the current piece of code. Eg forces an include command to return.
     // *
@@ -247,64 +258,82 @@ public class EnvironmentModule extends AbstractScriptModule implements IScriptMo
     // throw new BreakException(value);
     // }
     //
-    // /**
-    // * Include and execute a JavaScript file. Quite similar to execute(Object) a source file is opened and its content is executed. Multiple sources are
-    // * available: "workspace://" opens a file relative to the workspace root, "project://" opens a file relative to the current project, "file://" opens a
-    // file
-    // * from the file system.
-    // *
-    // * @param filename
-    // * name of file to be included
-    // * @return result of include operation
-    // * @throws Throwable
-    // */
-    // @WrapToScript
-    // public final Object include(final String filename) throws Throwable {
-    // final Object currentFile = getScriptEngine().getFileTrace().getTopMostFile();
-    // Object content = ResourceTools.getContent(filename, currentFile);
-    //
-    // // maybe someone forgot to add the file extension, lets check
-    // if ((content == null) && (!filename.toLowerCase().endsWith(".js")))
-    // content = ResourceTools.getContent(filename + ".js", currentFile);
-    //
-    // // execute code
-    // ScriptResult scriptResult = null;
-    // if (((content instanceof File) && (((File) content).exists())) || ((content instanceof IFile) && (((IFile) content).exists()))
-    // || (content instanceof InputStream)) {
-    //
-    // scriptResult = getScriptEngine().inject(content);
-    //
-    // if (scriptResult.hasException())
-    // throw scriptResult.getException();
-    //
-    // } else
-    // throw new RuntimeException("cannot resolve \"" + filename + "\"");
-    //
-    // return scriptResult.getResult();
-    // }
-    //
-    // /**
-    // * Resolves a {@link File} object from a given string. If called from a script, a relative path will be resolved starting from the calling script
-    // location.
-    // *
-    // * @param filename
-    // * name of the file to resolve
-    // * @return file instance. Might return an instance of a non-existing file
-    // */
-    // @WrapToScript
-    // public final File resolveFile(final String filename) {
-    // final Object currentFile = getScriptEngine().getFileTrace().getTopMostFile();
-    // final Object file = ResourceTools.getContent(filename, currentFile);
-    //
-    // if (file instanceof IResource)
-    // return ((IResource) file).getRawLocation().toFile();
-    //
-    // else if (file instanceof File)
-    // return (File) file;
-    //
-    // return null;
-    // }
-    //
+    /**
+     * Include and execute a JavaScript file. Quite similar to execute(Object) a source file is opened and its content is executed. Multiple sources are
+     * available: "workspace://" opens a file relative to the workspace root, "project://" opens a file relative to the current project, "file://" opens a file
+     * from the file system.
+     * 
+     * @param filename
+     *            name of file to be included
+     * @return result of include operation
+     * @throws Throwable
+     */
+    @WrapToScript
+    public final Object include(final String filename) {
+        if (filename.contains("://")) {
+            // seems to be a URL
+
+            if (filename.startsWith(PROJECT)) {
+                // project relative link
+                Object currentFile = getScriptEngine().getExecutedFile();
+                if (currentFile instanceof IFile) {
+                    IFile file = ((IFile) currentFile).getProject().getFile(new Path(filename.substring(PROJECT.length())));
+                    if (file.exists())
+                        return getScriptEngine().inject(file);
+                }
+
+            } else if (filename.startsWith(WORKSPACE)) {
+                // absolute path within workspace
+                IFile workspaceFile = ResourcesPlugin.getWorkspace().getRoot().getFile(new Path(filename.substring(WORKSPACE.length())));
+                if (workspaceFile.exists())
+                    return getScriptEngine().inject(workspaceFile);
+
+            } else {
+                // generic URL
+                try {
+                    URL url = new URL(filename);
+
+                    return getScriptEngine().inject(url.openStream());
+                } catch (MalformedURLException e) {
+                    // TODO handle this exception (but for now, at least know it happened)
+                    throw new RuntimeException(e);
+                } catch (IOException e) {
+                    // TODO handle this exception (but for now, at least know it happened)
+                    throw new RuntimeException(e);
+                }
+            }
+
+        } else {
+            // no URL, try to resolve
+
+            // maybe this is an absolute path within the file system
+            File systemFile = new File(filename);
+            if (systemFile.exists())
+                return getScriptEngine().inject(systemFile);
+
+            // maybe this is an absolute path within the workspace
+            IFile workspaceFile = ResourcesPlugin.getWorkspace().getRoot().getFile(new Path(filename));
+            if (workspaceFile.exists())
+                return getScriptEngine().inject(workspaceFile);
+
+            // maybe a relative filename
+            Object currentFile = getScriptEngine().getExecutedFile();
+            if (currentFile instanceof IFile) {
+                workspaceFile = ((IFile) currentFile).getParent().getFile(new Path(filename));
+                if (workspaceFile.exists())
+                    return getScriptEngine().inject(workspaceFile);
+
+            } else if (currentFile instanceof File) {
+                systemFile = new File(((File) currentFile).getParentFile().getAbsolutePath() + File.pathSeparator + filename);
+                if (systemFile.exists())
+                    return getScriptEngine().inject(systemFile);
+            }
+        }
+
+        // giving up
+        throw new RuntimeException("cannot resolve \"" + filename + "\"");
+    }
+
     // /**
     // * List all available (visible) modules. Returns a list of visible modules. Loaded modules are indicated.
     // *
@@ -376,22 +405,18 @@ public class EnvironmentModule extends AbstractScriptModule implements IScriptMo
     //
     // return null;
     // }
-    //
-    // /**
-    // * Print to standard output.
-    // *
-    // * @param text
-    // * text to write to standard output
-    // */
-    // @WrapToScript
-    // public final void print(final Object text) {
-    // if (UNDEFINED.equals(text))
-    // getScriptEngine().getOutputStream().println();
-    //
-    // else
-    // getScriptEngine().getOutputStream().println(text);
-    // }
-    //
+
+    /**
+     * Print to standard output.
+     * 
+     * @param text
+     *            text to write to standard output
+     */
+    @WrapToScript
+    public final void print(final Object text) {
+        getScriptEngine().getOutputStream().println(text);
+    }
+
     // // FIXME move to rhino bundle
     // /**
     // * Resolves a jar file and makes its classes available for the ClassLoader.

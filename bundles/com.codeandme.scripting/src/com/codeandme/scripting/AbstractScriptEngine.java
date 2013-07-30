@@ -25,6 +25,7 @@ import org.eclipse.core.runtime.ListenerList;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 
+import com.codeandme.scripting.FileTrace.Trace;
 import com.codeandme.scripting.service.ScriptService;
 
 /**
@@ -288,6 +289,17 @@ public abstract class AbstractScriptEngine extends Job implements IScriptEngine 
     @Override
     public FileTrace getFileTrace() {
         return mFileTrace;
+    }
+
+    @Override
+    public Object getExecutedFile() {
+        for (Trace trace : getFileTrace()) {
+            Object file = trace.getFile();
+            if (file != null)
+                return file;
+        }
+
+        return null;
     }
 
     public void setEngineDescription(final EngineDescription description) {

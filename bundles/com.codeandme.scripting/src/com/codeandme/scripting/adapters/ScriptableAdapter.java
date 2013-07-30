@@ -14,7 +14,7 @@ public class ScriptableAdapter implements IAdapterFactory {
     @Override
     public final Object getAdapter(final Object adaptableObject, final Class adapterType) {
         if (adapterType.equals(IScriptable.class)) {
-            if (adaptableObject instanceof IFile)
+            if (adaptableObject instanceof IFile) {
                 return new IScriptable() {
 
                     @Override
@@ -22,8 +22,9 @@ public class ScriptableAdapter implements IAdapterFactory {
                         return ((IFile) adaptableObject).getContents();
                     }
                 };
+            }
 
-            if (adaptableObject instanceof File)
+            if (adaptableObject instanceof File) {
                 return new IScriptable() {
 
                     @Override
@@ -31,7 +32,7 @@ public class ScriptableAdapter implements IAdapterFactory {
                         return new FileInputStream((File) adaptableObject);
                     }
                 };
-
+            }
         }
 
         return null;

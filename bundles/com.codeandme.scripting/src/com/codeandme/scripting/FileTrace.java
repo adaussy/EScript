@@ -87,12 +87,17 @@ public class FileTrace implements Iterable<FileTrace.Trace> {
             if (mUrl != null) {
                 // first try to resolve the file in workspace
                 try {
-                    return ResourcesPlugin.getWorkspace().getRoot().getFile(new Path(mUrl));
+                    IFile file = ResourcesPlugin.getWorkspace().getRoot().getFile(new Path(mUrl));
+                    if (file.exists())
+                        return file;
+
                 } catch (final Exception e) {
                 }
 
                 // didn't work, resolve from system
-                return new File(mUrl);
+                File file = new File(mUrl);
+                if (file.exists())
+                    return file;
             }
 
             return null;

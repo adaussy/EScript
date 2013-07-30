@@ -16,7 +16,9 @@ package com.codeandme.scripting;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
+import java.io.Reader;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.CoreException;
@@ -94,6 +96,20 @@ public class Script {
      */
     public final void setResult(final Object result) {
         mResult.setResult(result);
+
+        // gracefully close input streams & readers
+        if (mCommand instanceof InputStream) {
+            try {
+                ((InputStream) mCommand).close();
+            } catch (IOException e) {
+            }
+
+        } else if (mCommand instanceof Reader) {
+            try {
+                ((Reader) mCommand).close();
+            } catch (IOException e) {
+            }
+        }
     }
 
     /**
@@ -104,6 +120,20 @@ public class Script {
      */
     public final void setException(final Exception e) {
         mResult.setException(e);
+
+        // gracefully close input streams & readers
+        if (mCommand instanceof InputStream) {
+            try {
+                ((InputStream) mCommand).close();
+            } catch (IOException ex) {
+            }
+
+        } else if (mCommand instanceof Reader) {
+            try {
+                ((Reader) mCommand).close();
+            } catch (IOException ex) {
+            }
+        }
     }
 
     public Object getFile() {

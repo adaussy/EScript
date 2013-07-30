@@ -181,12 +181,6 @@ public class RhinoScriptEngine extends AbstractScriptEngine implements IDebugEng
         return mScope;
     }
 
-    @Override
-    public Object getExecutedFile() {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
     public synchronized void registerJar(final URL url) {
         RhinoClassLoader.registerURL(this, url);
     }
