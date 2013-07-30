@@ -1,9 +1,9 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: Ui
+Bundle-Name: EScript - Rhino engine UI
 Bundle-SymbolicName: com.codeandme.scripting.javascript.rhino.ui;singleton:=true
 Bundle-Version: 1.0.0.qualifier
-Bundle-Vendor: CODEANDME
+Bundle-Vendor: Code & me
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Require-Bundle: org.eclipse.debug.core;bundle-version="3.7.100",
  org.eclipse.debug.ui;bundle-version="3.8.0",
