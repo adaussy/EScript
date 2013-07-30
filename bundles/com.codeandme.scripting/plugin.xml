@@ -34,5 +34,14 @@
             serviceClass="com.codeandme.scripting.urlhandler.WorkspaceURLStreamHandlerService">
       </urlStreamHandlerService>
    </extension>
+   <extension
+         point="com.codeandme.scripting.language">
+      <module
+            class="com.codeandme.scripting.modules.EnvironmentModule"
+            documentation="false"
+            name="Environment"
+            visible="false">
+      </module>
+   </extension>
 
 </plugin>

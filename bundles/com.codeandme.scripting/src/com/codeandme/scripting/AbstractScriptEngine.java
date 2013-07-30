@@ -281,7 +281,7 @@ public abstract class AbstractScriptEngine extends Job implements IScriptEngine 
         mCodePieces.clear();
 
         // re-enable launch extensions to register themselves
-        for (final IScriptEngineLaunchExtension extension : ScriptService.getLaunchExtensions())
+        for (final IScriptEngineLaunchExtension extension : ScriptService.getLaunchExtensions(getID()))
             extension.createEngine(this);
     }
 

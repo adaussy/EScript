@@ -21,7 +21,6 @@ Require-Bundle: org.eclipse.debug.core;bundle-version="3.7.100",
  org.eclipse.ui.workbench;bundle-version="3.103.0",
  org.eclipse.ui.ide;bundle-version="3.8.0",
  com.codeandme.scripting.ui;bundle-version="1.0.0",
- com.codeandme.scripting.javascript;bundle-version="1.0.0",
  org.eclipse.core.expressions;bundle-version="3.4.500"
 Bundle-ActivationPolicy: lazy
 Bundle-Activator: com.codeandme.scripting.javascript.rhino.ui.Activator

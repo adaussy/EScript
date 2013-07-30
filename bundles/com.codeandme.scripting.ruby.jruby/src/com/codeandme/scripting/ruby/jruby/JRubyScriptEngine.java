@@ -2,6 +2,7 @@ package com.codeandme.scripting.ruby.jruby;
 
 import java.io.InputStream;
 
+import org.jruby.embed.LocalVariableBehavior;
 import org.jruby.embed.ScriptingContainer;
 
 import com.codeandme.scripting.AbstractScriptEngine;
@@ -26,7 +27,7 @@ public class JRubyScriptEngine extends AbstractScriptEngine {
 
     @Override
     protected boolean setupEngine() {
-        mEngine = new ScriptingContainer();
+        mEngine = new ScriptingContainer(LocalVariableBehavior.PERSISTENT);
 
         mEngine.setOutput(getOutputStream());
         mEngine.setError(getErrorStream());

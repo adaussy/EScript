@@ -2,13 +2,13 @@
 <?eclipse version="3.4"?>
 <plugin>
    <extension
-         point="com.codeandme.scripting.javascript.module">
-      <instance
+         point="com.codeandme.scripting.language">
+      <module
             class="com.codeandme.scripting.javascript.samplemodule.SampleModule"
-            documentation="false"
+            documentation="true"
             name="Sample"
             visible="true">
-      </instance>
+      </module>
    </extension>
 
 </plugin>

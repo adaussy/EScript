@@ -4,9 +4,11 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
@@ -27,6 +29,7 @@ public class ScriptService implements IScriptService {
     private static final String LAUNCH_EXTENSION = "launchExtension";
     private static final String MODULE_WRAPPER = "moduleWrapper";
     private static final String ENGINE_ID = "engineID";
+    private static final Object EXTENSION_MODULE = "module";
 
     private static ScriptService mInstance = null;
 
@@ -61,7 +64,7 @@ public class ScriptService implements IScriptService {
                     ((AbstractScriptEngine) engine).setEngineDescription(description);
 
                 // engine loaded, now load launch extensions
-                for (final IScriptEngineLaunchExtension extension : getLaunchExtensions())
+                for (final IScriptEngineLaunchExtension extension : getLaunchExtensions(((IScriptEngine) engine).getID()))
                     extension.createEngine((IScriptEngine) engine);
 
                 return (IScriptEngine) engine;
@@ -101,7 +104,7 @@ public class ScriptService implements IScriptService {
         return null;
     }
 
-    public static List<IScriptEngineLaunchExtension> getLaunchExtensions() {
+    public static List<IScriptEngineLaunchExtension> getLaunchExtensions(final String engineID) {
         final List<IScriptEngineLaunchExtension> extensions = new LinkedList<IScriptEngineLaunchExtension>();
 
         final IConfigurationElement[] config = Platform.getExtensionRegistry().getConfigurationElementsFor(EXTENSION_MODULE_ID);
@@ -109,9 +112,11 @@ public class ScriptService implements IScriptService {
         for (final IConfigurationElement e : config) {
             try {
                 if (LAUNCH_EXTENSION.equals(e.getName())) {
-                    final Object extension = e.createExecutableExtension("class");
-                    if (extension instanceof IScriptEngineLaunchExtension)
-                        extensions.add((IScriptEngineLaunchExtension) extension);
+                    if (e.getAttribute(ENGINE_ID).equals(engineID)) {
+                        final Object extension = e.createExecutableExtension("class");
+                        if (extension instanceof IScriptEngineLaunchExtension)
+                            extensions.add((IScriptEngineLaunchExtension) extension);
+                    }
                 }
             } catch (final InvalidRegistryObjectException e1) {
             } catch (final CoreException e1) {
@@ -135,8 +140,7 @@ public class ScriptService implements IScriptService {
     }
 
     @Override
-    public Collection<IModuleWrapper> getModuleWrappers(final String engineID) {
-        final List<IModuleWrapper> wrapper = new LinkedList<IModuleWrapper>();
+    public IModuleWrapper getModuleWrapper(final String engineID) {
 
         final IConfigurationElement[] config = Platform.getExtensionRegistry().getConfigurationElementsFor(EXTENSION_MODULE_ID);
 
@@ -147,7 +151,7 @@ public class ScriptService implements IScriptService {
 
                         final Object extension = e.createExecutableExtension("class");
                         if (extension instanceof IModuleWrapper)
-                            wrapper.add((IModuleWrapper) extension);
+                            return (IModuleWrapper) extension;
                     }
                 }
             } catch (final InvalidRegistryObjectException e1) {
@@ -155,6 +159,22 @@ public class ScriptService implements IScriptService {
             }
         }
 
-        return wrapper;
+        return null;
+    }
+
+    public static Map<String, ModuleDefinition> getAvailableModules() {
+
+        Map<String, ModuleDefinition> modules = new HashMap<String, ModuleDefinition>();
+
+        final IConfigurationElement[] config = Platform.getExtensionRegistry().getConfigurationElementsFor(EXTENSION_MODULE_ID);
+        for (final IConfigurationElement e : config) {
+            if (e.getName().equals(EXTENSION_MODULE)) {
+                // module extension detected
+                ModuleDefinition definition = new ModuleDefinition(e);
+                modules.put(definition.getName(), definition);
+            }
+        }
+
+        return modules;
     }
 }

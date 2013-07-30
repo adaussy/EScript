@@ -13,9 +13,9 @@ import org.eclipse.ui.menus.ExtensionContributionFactory;
 import org.eclipse.ui.menus.IContributionRoot;
 import org.eclipse.ui.services.IServiceLocator;
 
-import com.codeandme.scripting.javascript.modules.AbstractJavaScriptModule;
-import com.codeandme.scripting.javascript.rhino.modules.EnvironmentModule;
 import com.codeandme.scripting.javascript.rhino.ui.Activator;
+import com.codeandme.scripting.modules.EnvironmentModule;
+import com.codeandme.scripting.modules.IScriptModule;
 
 public class MolduleContributionFactory extends ExtensionContributionFactory {
 
@@ -26,7 +26,7 @@ public class MolduleContributionFactory extends ExtensionContributionFactory {
     @Override
     public void createContributionItems(final IServiceLocator serviceLocator, final IContributionRoot additions) {
 
-        final Map<String, Class<? extends AbstractJavaScriptModule>> modules = EnvironmentModule.getAvailableModules(false);
+        final Map<String, Class<? extends IScriptModule>> modules = EnvironmentModule.getAvailableModules(false);
 
         final List<CommandContributionItemParameter> items = new ArrayList<CommandContributionItemParameter>();
         for (final String moduleName : modules.keySet()) {

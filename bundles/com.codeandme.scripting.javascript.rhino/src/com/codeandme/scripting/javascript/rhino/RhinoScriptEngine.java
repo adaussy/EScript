@@ -35,14 +35,13 @@ import org.mozilla.javascript.debug.Debugger;
 import com.codeandme.scripting.AbstractScriptEngine;
 import com.codeandme.scripting.FileTrace;
 import com.codeandme.scripting.IDebugEngine;
-import com.codeandme.scripting.IScriptEngine;
 import com.codeandme.scripting.javascript.rhino.debugger.LineNumberDebugger;
 import com.codeandme.scripting.javascript.rhino.debugger.LineNumberDebugger.LineNumberDebugFrame;
 
 /**
  * A script engine to execute JavaScript code on a Rhino interpreter.
  */
-public class RhinoScriptEngine extends AbstractScriptEngine implements IScriptEngine, IDebugEngine {
+public class RhinoScriptEngine extends AbstractScriptEngine implements IDebugEngine {
 
     // public static final int MAGIC_NUMBER = RhinoScriptEngine.class.hashCode();
 

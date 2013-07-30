@@ -12,5 +12,5 @@ public interface IScriptService {
 
     Collection<EngineDescription> getEngines();
 
-    Collection<IModuleWrapper> getModuleWrappers(String engineID);
+    IModuleWrapper getModuleWrapper(String engineID);
 }

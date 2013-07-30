@@ -16,10 +16,10 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.wizards.IWizardDescriptor;
 import org.eclipse.ui.wizards.newresource.BasicNewProjectResourceWizard;
 
-import com.codeandme.scripting.javascript.modules.AbstractJavaScriptModule;
-import com.codeandme.scripting.javascript.modules.WrapToJavaScript;
+import com.codeandme.scripting.modules.AbstractScriptModule;
+import com.codeandme.scripting.modules.WrapToScript;
 
-public class SampleModule extends AbstractJavaScriptModule {
+public class SampleModule extends AbstractScriptModule {
 
     private final class WizardRunnable implements Runnable {
         private IProject mProject = null;
@@ -56,7 +56,7 @@ public class SampleModule extends AbstractJavaScriptModule {
     public SampleModule() {
     }
 
-    @WrapToJavaScript
+    @WrapToScript
     public void displayMessage(final String title, final String message) {
         Display.getDefault().asyncExec(new Runnable() {
 
@@ -67,7 +67,7 @@ public class SampleModule extends AbstractJavaScriptModule {
         });
     }
 
-    @WrapToJavaScript
+    @WrapToScript
     public void openView(final String identifier) {
 
         Display.getDefault().asyncExec(new Runnable() {
@@ -100,7 +100,7 @@ public class SampleModule extends AbstractJavaScriptModule {
         });
     }
 
-    @WrapToJavaScript
+    @WrapToScript
     public IProject openProjectWizard() {
         WizardRunnable runnable = new WizardRunnable();
         Display.getDefault().syncExec(runnable);

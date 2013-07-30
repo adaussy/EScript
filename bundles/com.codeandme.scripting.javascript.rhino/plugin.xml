@@ -24,7 +24,22 @@
                type="JavaScript">
          </supportedScriptType>
       </engine>
-      <launchExtension></launchExtension>
+      <moduleWrapper
+            class="com.codeandme.scripting.javascript.rhino.RhinoModuleWrapper"
+            engineID="com.codeandme.scripting.javascript.rhino">
+      </moduleWrapper>
+      <moduleWrapper
+            class="com.codeandme.scripting.javascript.rhino.RhinoModuleWrapper"
+            engineID="com.codeandme.scripting.javascript.rhino.debug">
+      </moduleWrapper>
+      <launchExtension
+            class="com.codeandme.scripting.modules.BootStrapper"
+            engineID="com.codeandme.scripting.javascript.rhino">
+      </launchExtension>
+      <launchExtension
+            class="com.codeandme.scripting.modules.BootStrapper"
+            engineID="com.codeandme.scripting.javascript.rhino.debug">
+      </launchExtension>
    </extension>
 
 </plugin>

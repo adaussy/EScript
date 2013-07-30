@@ -22,6 +22,7 @@
             <element ref="launchExtension" minOccurs="0" maxOccurs="unbounded"/>
             <element ref="scriptType" minOccurs="0" maxOccurs="unbounded"/>
             <element ref="module" minOccurs="0" maxOccurs="unbounded"/>
+            <element ref="moduleWrapper" minOccurs="0" maxOccurs="unbounded"/>
          </choice>
          <attribute name="point" type="string" use="required">
             <annotation>
@@ -118,6 +119,16 @@
 
    <element name="launchExtension">
       <complexType>
+         <attribute name="engineID" type="string" use="required">
+            <annotation>
+               <documentation>
+                  
+               </documentation>
+               <appinfo>
+                  <meta.attribute kind="identifier" basedOn="com.codeandme.scripting.language/engine/@id"/>
+               </appinfo>
+            </annotation>
+         </attribute>
          <attribute name="class" type="string">
             <annotation>
                <documentation>
