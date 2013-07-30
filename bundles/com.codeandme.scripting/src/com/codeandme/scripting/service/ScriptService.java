@@ -1,5 +1,10 @@
 package com.codeandme.scripting.service;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -8,19 +13,20 @@ import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.InvalidRegistryObjectException;
 import org.eclipse.core.runtime.Platform;
 
+import com.codeandme.scripting.AbstractScriptEngine;
+import com.codeandme.scripting.EngineDescription;
 import com.codeandme.scripting.IScriptEngine;
 import com.codeandme.scripting.IScriptEngineLaunchExtension;
 import com.codeandme.scripting.IScriptService;
+import com.codeandme.scripting.modules.IModuleWrapper;
 
 public class ScriptService implements IScriptService {
 
-    private static final String PRIORITY = "priority";
     private static final String EXTENSION_MODULE_ID = "com.codeandme.scripting.language";
-    private static final String SUPPORTED_SCRIPT_TYPE = "supportedScriptType";
-    private static final String TYPE = "type";
     private static final String ENGINE = "engine";
     private static final String LAUNCH_EXTENSION = "launchExtension";
-    private static final String ID = "id";
+    private static final String MODULE_WRAPPER = "moduleWrapper";
+    private static final String ENGINE_ID = "engineID";
 
     private static ScriptService mInstance = null;
 
@@ -35,57 +41,24 @@ public class ScriptService implements IScriptService {
     }
 
     @Override
-    public IScriptEngine createEngine(final String scriptType) {
-        return createEngine(scriptType, null);
-    }
-
-    @Override
-    public IScriptEngine createEngine(final String scriptType, final String engineID) {
-        final IConfigurationElement[] config = Platform.getExtensionRegistry().getConfigurationElementsFor(EXTENSION_MODULE_ID);
-
-        // find first engine supporting type
-        if (scriptType != null) {
-            IConfigurationElement candidate = null;
-            int candidatePriority = -1;
-
-            for (final IConfigurationElement e : config) {
-                if (ENGINE.equals(e.getName())) {
-                    if ((engineID == null) || (engineID.equals(e.getAttribute(ID)))) {
-
-                        for (final IConfigurationElement child : e.getChildren(SUPPORTED_SCRIPT_TYPE)) {
-                            if (scriptType.equals(child.getAttribute(TYPE))) {
-                                // engine found, check its priority
-                                int priority;
-                                try {
-                                    priority = Integer.parseInt(e.getAttribute(PRIORITY).toString());
-                                } catch (Throwable e1) {
-                                    priority = 0;
-                                }
-
-                                if (priority > candidatePriority) {
-                                    // higher priority detected
-                                    candidate = e;
-                                    candidatePriority = priority;
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-
-            if (candidate != null)
-                return createEngine(candidate);
+    public IScriptEngine createEngineByID(final String engineID) {
+        List<EngineDescription> engines = new ArrayList<EngineDescription>(getEngines());
+        for (EngineDescription description : engines) {
+            if (description.getID().equals(engineID))
+                return createEngine(description);
         }
 
         return null;
     }
 
-    private static IScriptEngine createEngine(final IConfigurationElement e) {
+    private IScriptEngine createEngine(final EngineDescription description) {
         try {
-            final Object engine = e.createExecutableExtension("class");
-            if (engine instanceof IScriptEngine) {
+            Object engine = description.createEngine();
 
-                ((IScriptEngine) engine).setEngineID(e.getAttribute(ID));
+            if (engine instanceof IScriptEngine) {
+                // configure engine
+                if (engine instanceof AbstractScriptEngine)
+                    ((AbstractScriptEngine) engine).setEngineDescription(description);
 
                 // engine loaded, now load launch extensions
                 for (final IScriptEngineLaunchExtension extension : getLaunchExtensions())
@@ -93,16 +66,42 @@ public class ScriptService implements IScriptService {
 
                 return (IScriptEngine) engine;
             }
-            // TODO log error
-
-        } catch (final CoreException e1) {
-            // TODO log error
+        } catch (CoreException e) {
         }
 
         return null;
     }
 
-    private static List<IScriptEngineLaunchExtension> getLaunchExtensions() {
+    @Override
+    public IScriptEngine createEngine(final String scriptType) {
+        List<EngineDescription> engines = new ArrayList<EngineDescription>(getEngines());
+
+        // sort by priority (highest first)
+        Collections.sort(engines, new Comparator<EngineDescription>() {
+
+            @Override
+            public int compare(final EngineDescription o1, final EngineDescription o2) {
+                return o2.getPriority() - o1.getPriority();
+            }
+        });
+
+        // return first engine where ID matches or (in case no ID is provided)
+        // scriptType matches
+        for (EngineDescription description : engines) {
+            if (description.getSupportedScriptTypes().contains(scriptType)) {
+                // engine found, launch
+                IScriptEngine engine = createEngine(description);
+                if (engine != null)
+                    return engine;
+
+                // we could not create engine for some reason, try next one
+            }
+        }
+
+        return null;
+    }
+
+    public static List<IScriptEngineLaunchExtension> getLaunchExtensions() {
         final List<IScriptEngineLaunchExtension> extensions = new LinkedList<IScriptEngineLaunchExtension>();
 
         final IConfigurationElement[] config = Platform.getExtensionRegistry().getConfigurationElementsFor(EXTENSION_MODULE_ID);
@@ -120,5 +119,42 @@ public class ScriptService implements IScriptService {
         }
 
         return extensions;
+    }
+
+    @Override
+    public Collection<EngineDescription> getEngines() {
+        final IConfigurationElement[] config = Platform.getExtensionRegistry().getConfigurationElementsFor(EXTENSION_MODULE_ID);
+
+        HashSet<EngineDescription> engines = new HashSet<EngineDescription>();
+        for (final IConfigurationElement e : config) {
+            if (ENGINE.equals(e.getName()))
+                engines.add(new EngineDescription(e));
+        }
+
+        return engines;
+    }
+
+    @Override
+    public Collection<IModuleWrapper> getModuleWrappers(final String engineID) {
+        final List<IModuleWrapper> wrapper = new LinkedList<IModuleWrapper>();
+
+        final IConfigurationElement[] config = Platform.getExtensionRegistry().getConfigurationElementsFor(EXTENSION_MODULE_ID);
+
+        for (final IConfigurationElement e : config) {
+            try {
+                if (MODULE_WRAPPER.equals(e.getName())) {
+                    if (engineID.equals(e.getAttribute(ENGINE_ID))) {
+
+                        final Object extension = e.createExecutableExtension("class");
+                        if (extension instanceof IModuleWrapper)
+                            wrapper.add((IModuleWrapper) extension);
+                    }
+                }
+            } catch (final InvalidRegistryObjectException e1) {
+            } catch (final CoreException e1) {
+            }
+        }
+
+        return wrapper;
     }
 }

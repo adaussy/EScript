@@ -4,6 +4,7 @@ import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.commands.IHandler;
+import org.eclipse.ui.IViewPart;
 import org.eclipse.ui.IViewReference;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.PartInitException;
@@ -12,8 +13,6 @@ import org.eclipse.ui.handlers.HandlerUtil;
 import com.codeandme.scripting.ui.view.ScriptShell;
 
 public class SpawnShell extends AbstractHandler implements IHandler {
-
-    public static final String COMMAND_ID = "com.codeandme.commands.scriptShell.newShell";
 
     @Override
     public Object execute(final ExecutionEvent event) throws ExecutionException {
@@ -34,9 +33,14 @@ public class SpawnShell extends AbstractHandler implements IHandler {
 
         // open view
         try {
-            page.showView(ScriptShell.VIEW_ID, Integer.toString(maxID + 1), IWorkbenchPage.VIEW_ACTIVATE);
+            IViewPart view = page.showView(ScriptShell.VIEW_ID, Integer.toString(maxID + 1), IWorkbenchPage.VIEW_ACTIVATE);
+            if (view instanceof ScriptShell) {
+                // TODO set new engine
+            }
+
         } catch (PartInitException e) {
-            // TODO handle this exception (but for now, at least know it happened)
+            // TODO handle this exception (but for now, at least know it
+            // happened)
             throw new RuntimeException(e);
         }
 

@@ -21,6 +21,7 @@
             <element ref="engine" minOccurs="0" maxOccurs="unbounded"/>
             <element ref="launchExtension" minOccurs="0" maxOccurs="unbounded"/>
             <element ref="scriptType" minOccurs="0" maxOccurs="unbounded"/>
+            <element ref="module" minOccurs="0" maxOccurs="unbounded"/>
          </choice>
          <attribute name="point" type="string" use="required">
             <annotation>
@@ -124,6 +125,85 @@
                </documentation>
                <appinfo>
                   <meta.attribute kind="java" basedOn=":com.codeandme.scripting.IScriptEngineLaunchExtension"/>
+               </appinfo>
+            </annotation>
+         </attribute>
+      </complexType>
+   </element>
+
+   <element name="module">
+      <complexType>
+         <choice minOccurs="0" maxOccurs="unbounded">
+            <element ref="dependency" minOccurs="0" maxOccurs="unbounded"/>
+         </choice>
+         <attribute name="name" type="string" use="required">
+            <annotation>
+               <documentation>
+                  Name of module as used by the module({name}) JavaScript command
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="class" type="string" use="required">
+            <annotation>
+               <documentation>
+                  Implementing class
+               </documentation>
+               <appinfo>
+                  <meta.attribute kind="java" basedOn=":com.codeandme.scripting.IScriptModule"/>
+               </appinfo>
+            </annotation>
+         </attribute>
+         <attribute name="visible" type="boolean" use="default" value="true">
+            <annotation>
+               <documentation>
+                  Make this module visible for the user. If set to false, the module can still be loaded, but dialogs and dropdowns will not list it. Defaults to [false]
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="documentation" type="boolean" use="default" value="true">
+            <annotation>
+               <documentation>
+                  Create documentation for this module. If set to false, no documentation will be created. Defaults to [false]
+               </documentation>
+            </annotation>
+         </attribute>
+      </complexType>
+   </element>
+
+   <element name="dependency">
+      <complexType>
+         <attribute name="module" type="string">
+            <annotation>
+               <documentation>
+                  
+               </documentation>
+               <appinfo>
+                  <meta.attribute kind="identifier" basedOn="com.codeandme.scripting.language/module/@name"/>
+               </appinfo>
+            </annotation>
+         </attribute>
+      </complexType>
+   </element>
+
+   <element name="moduleWrapper">
+      <complexType>
+         <attribute name="engineID" type="string" use="required">
+            <annotation>
+               <documentation>
+                  
+               </documentation>
+               <appinfo>
+                  <meta.attribute kind="identifier" basedOn="com.codeandme.scripting.language/engine/@id"/>
+               </appinfo>
+            </annotation>
+         </attribute>
+         <attribute name="class" type="string" use="required">
+            <annotation>
+               <documentation>
+                  
+               </documentation>
+               <appinfo>
+                  <meta.attribute kind="java" basedOn=":com.codeandme.scripting.modules.IModuleWrapper"/>
                </appinfo>
             </annotation>
          </attribute>

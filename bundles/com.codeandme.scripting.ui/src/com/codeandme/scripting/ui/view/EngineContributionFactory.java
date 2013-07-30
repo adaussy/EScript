@@ -1,6 +1,7 @@
 package com.codeandme.scripting.ui.view;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -15,8 +16,9 @@ import org.eclipse.ui.menus.IContributionRoot;
 import org.eclipse.ui.menus.IMenuService;
 import org.eclipse.ui.services.IServiceLocator;
 
+import com.codeandme.scripting.EngineDescription;
 import com.codeandme.scripting.IScriptService;
-import com.codeandme.scripting.ui.handler.SpawnShell;
+import com.codeandme.scripting.ui.handler.SwitchEngine;
 
 public class EngineContributionFactory extends AbstractContributionFactory {
 
@@ -46,7 +48,7 @@ public class EngineContributionFactory extends AbstractContributionFactory {
      * Private constructor.
      */
     private EngineContributionFactory() {
-        super("menu:" + SpawnShell.COMMAND_ID + ".popup", null);
+        super("menu:" + SwitchEngine.COMMAND_ID + ".popup", null);
     }
 
     @Override
@@ -54,21 +56,21 @@ public class EngineContributionFactory extends AbstractContributionFactory {
 
         IScriptService scriptService = (IScriptService) PlatformUI.getWorkbench().getService(IScriptService.class);
         if (scriptService != null) {
-            Map<String, String> engines = scriptService.getEngines();
+            Collection<EngineDescription> engines = scriptService.getEngines();
 
             final List<CommandContributionItemParameter> items = new ArrayList<CommandContributionItemParameter>();
-            for (final String name : engines.keySet()) {
+            for (final EngineDescription description : engines) {
 
                 // set parameter for command
                 final HashMap<String, String> parameters = new HashMap<String, String>();
-                parameters.put(SpawnShell.PARAMETER_ID, engines.get(name));
+                parameters.put(SwitchEngine.PARAMETER_ID, description.getID());
 
                 final CommandContributionItemParameter contributionParameter = new CommandContributionItemParameter(serviceLocator, null,
-                        SpawnShell.COMMAND_ID, CommandContributionItem.STYLE_PUSH);
+                        SwitchEngine.COMMAND_ID, CommandContributionItem.STYLE_PUSH);
                 contributionParameter.parameters = parameters;
-                contributionParameter.label = name;
+                contributionParameter.label = description.getName();
                 contributionParameter.visibleEnabled = true;
-                contributionParameter.icon = SWTTools.getImageDescriptor("com.infineon.javascript.ui", "/images/library.png", true);
+//                contributionParameter.icon = activator.getImageDescriptor("com.infineon.javascript.ui", "/images/library.png", true);
 
                 items.add(contributionParameter);
             }

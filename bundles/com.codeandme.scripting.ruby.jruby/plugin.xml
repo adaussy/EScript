@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension
+         point="com.codeandme.scripting.language">
+      <scriptType
+            type="Ruby">
+      </scriptType>
+      <engine
+            class="com.codeandme.scripting.ruby.jruby.JRubyScriptEngine"
+            id="com.codeandme.scripting.ruby.jruby.engine">
+      </engine>
+   </extension>
+
+</plugin>

@@ -25,8 +25,7 @@ import org.eclipse.core.runtime.ListenerList;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 
-import com.codeandme.scripting.legacy.BreakException;
-import com.codeandme.scripting.legacy.ScriptService;
+import com.codeandme.scripting.service.ScriptService;
 
 /**
  * Base implementation for a script engine. Handles Job implementation of script engine, adding script code for execution, module loading support and a basic
@@ -63,16 +62,6 @@ public abstract class AbstractScriptEngine extends Job implements IScriptEngine 
 
         // make this a system job (not visible to the user)
         setSystem(true);
-    }
-
-    @Override
-    public final void setEngineID(final String ID) {
-        mID = ID;
-    }
-
-    @Override
-    public String getID() {
-        return mID;
     }
 
     @Override
@@ -299,6 +288,15 @@ public abstract class AbstractScriptEngine extends Job implements IScriptEngine 
     @Override
     public FileTrace getFileTrace() {
         return mFileTrace;
+    }
+
+    public void setEngineDescription(final EngineDescription description) {
+        mID = description.getID();
+    }
+
+    @Override
+    public String getID() {
+        return mID;
     }
 
     /**

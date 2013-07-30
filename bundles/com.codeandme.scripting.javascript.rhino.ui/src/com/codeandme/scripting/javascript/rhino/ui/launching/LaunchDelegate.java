@@ -220,8 +220,7 @@ public class LaunchDelegate implements ILaunchConfigurationDelegate {
 
                 // create script engine
                 IScriptService scriptService = (IScriptService) PlatformUI.getWorkbench().getService(IScriptService.class);
-                final RhinoScriptDebugEngine engine = (RhinoScriptDebugEngine) scriptService.createEngine("JavaScript",
-                        "com.codeandme.scripting.javascript.rhino.debug");
+                final RhinoScriptDebugEngine engine = (RhinoScriptDebugEngine) scriptService.createEngineByID("com.codeandme.scripting.javascript.rhino.debug");
 
                 engine.setInputStream(inputStreamIn);
                 engine.setOutputStream(new PrintStream(outputStreamOut));

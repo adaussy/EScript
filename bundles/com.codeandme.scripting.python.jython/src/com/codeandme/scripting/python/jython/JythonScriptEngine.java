@@ -30,7 +30,6 @@ public class JythonScriptEngine extends AbstractScriptEngine {
             // TODO handle this exception (but for now, at least know it happened)
             throw new RuntimeException(e);
         }
-
     }
 
     @Override

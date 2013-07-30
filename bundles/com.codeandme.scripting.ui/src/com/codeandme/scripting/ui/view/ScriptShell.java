@@ -79,7 +79,7 @@ public class ScriptShell extends ViewPart implements IMacroSupport, IPropertyCha
 
     private int[] mSashWeights = new int[] { 70, 30 };
 
-    private final IScriptEngine mScriptEngine;
+    private IScriptEngine mScriptEngine;
     private IMemento mInitMemento;
     private JavaScriptConsole mConsole = null;
     private final PipedInputStream mDefaultInputStream;
@@ -89,6 +89,14 @@ public class ScriptShell extends ViewPart implements IMacroSupport, IPropertyCha
     private String mResultTarget;
     private String mErrorTarget;
 
+    private MacroComposite mMacroComposite;
+
+    static {
+        // add dynamic context menu for module loading
+        EngineContributionFactory.addContextMenu();
+
+    }
+
     /**
      * Default constructor.
      */
@@ -96,9 +104,7 @@ public class ScriptShell extends ViewPart implements IMacroSupport, IPropertyCha
         super();
 
         // setup Script engine
-        IScriptService scriptService = (IScriptService) PlatformUI.getWorkbench().getService(IScriptService.class);
-        mScriptEngine = scriptService.createEngine("JavaScript");
-        mScriptEngine.setTerminateOnIdle(false);
+        setEngine("com.codeandme.scripting.javascript.rhino");
 
         // setup local streams
         mDefaultInputStream = new PipedInputStream();
@@ -119,16 +125,11 @@ public class ScriptShell extends ViewPart implements IMacroSupport, IPropertyCha
 
         configureOutputStreams();
 
-        mScriptEngine.schedule();
-
         // add dynamic context menu for macros
         MacroContributionFactory.addContextMenu("com.codeandme.commands.javascript.shell.showMacroManager.popup");
 
         // add dynamic context menu for module loading
         // ModuleContributionFactory.addContextMenu();
-
-        // add dynamic context menu for module loading
-        EngineContributionFactory.addContextMenu();
 
         // FIXME add preferences lookup
         Activator.getDefault().getPreferenceStore().addPropertyChangeListener(this);
@@ -257,7 +258,8 @@ public class ScriptShell extends ViewPart implements IMacroSupport, IPropertyCha
 
         mOutputText.setEditable(false);
 
-        new MacroComposite(this, getSite(), sashForm, SWT.NONE);
+        mMacroComposite = new MacroComposite(this, getSite(), sashForm, SWT.NONE);
+        mMacroComposite.setEngine(mScriptEngine.getID());
 
         sashForm.setWeights(mSashWeights);
         mInputCombo = new Combo(parent, SWT.NONE);
@@ -284,9 +286,6 @@ public class ScriptShell extends ViewPart implements IMacroSupport, IPropertyCha
         // clear reference as we are done with initialization
         mInitMemento = null;
 
-        // register at script engine
-        mScriptEngine.addExecutionListener(this);
-
         // add DND support
         ShellDropTarget.addDropSupport(mOutputText, mScriptEngine);
 
@@ -312,7 +311,8 @@ public class ScriptShell extends ViewPart implements IMacroSupport, IPropertyCha
             mInputCombo.remove(mInputCombo.getSelectionIndex());
 
         else {
-            // new element; check if we already have such an element in our history
+            // new element; check if we already have such an element in our
+            // history
             for (int index = 0; index < mInputCombo.getItemCount(); index++) {
                 if (mInputCombo.getItem(index).equals(input)) {
                     mInputCombo.remove(index);
@@ -330,8 +330,11 @@ public class ScriptShell extends ViewPart implements IMacroSupport, IPropertyCha
 
     @Override
     public final void dispose() {
-        mScriptEngine.setTerminateOnIdle(true);
-        mScriptEngine.terminate();
+        if (mScriptEngine != null) {
+            mScriptEngine.removeExecutionListener(this);
+            mScriptEngine.terminate();
+        }
+
         mConsole = null;
 
         mResourceManager.dispose();
@@ -518,5 +521,29 @@ public class ScriptShell extends ViewPart implements IMacroSupport, IPropertyCha
 
         } catch (final Exception e) {
         }
+    }
+
+    public void setEngine(final String id) {
+        if (mScriptEngine != null) {
+            mScriptEngine.removeExecutionListener(this);
+            mScriptEngine.terminate();
+        }
+
+        IScriptService scriptService = (IScriptService) PlatformUI.getWorkbench().getService(IScriptService.class);
+        mScriptEngine = scriptService.createEngineByID(id);
+        mScriptEngine.setTerminateOnIdle(false);
+
+        configureOutputStreams();
+
+        mScriptEngine.schedule();
+
+        // set view title
+        setPartName(mScriptEngine.getName() + " Script Shell");
+
+        // register at script engine
+        mScriptEngine.addExecutionListener(this);
+
+        if (mMacroComposite != null)
+            mMacroComposite.setEngine(mScriptEngine.getID());
     }
 }

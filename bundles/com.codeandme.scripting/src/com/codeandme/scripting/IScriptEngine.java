@@ -149,17 +149,9 @@ public interface IScriptEngine {
     String getID();
 
     /**
-     * Set the engine ID. The ID is the identifier used in the engine definition stored in plugin.xml.
-     * 
-     * @param ID
-     *            engine ID
-     */
-    void setEngineID(String ID);
-
-    /**
      * Get the engine name.
      * 
      * @return engine name
      */
-    String getName();
+    String getName();	
 }

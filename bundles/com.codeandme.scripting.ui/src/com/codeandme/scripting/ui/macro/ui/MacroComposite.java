@@ -16,6 +16,7 @@ import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.ViewerComparator;
+import org.eclipse.jface.viewers.ViewerFilter;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.DisposeEvent;
 import org.eclipse.swt.events.DisposeListener;
@@ -127,5 +128,9 @@ public class MacroComposite extends Composite implements IMacroListener {
         treeViewer.setInput("foo");
         treeViewer.setExpandedElements(expanded);
         treeViewer.refresh();
+    }
+
+    public void setEngine(final String engineID) {
+        treeViewer.setFilters(new ViewerFilter[] { new ScriptEngineFilter(engineID) });
     }
 }

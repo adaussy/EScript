@@ -1,0 +1,9 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Jruby
+Bundle-SymbolicName: com.codeandme.scripting.ruby.jruby;singleton:=true
+Bundle-Version: 1.0.0.qualifier
+Bundle-Vendor: CODEANDMY
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Require-Bundle: org.jruby;bundle-version="1.0.0",
+ com.codeandme.scripting

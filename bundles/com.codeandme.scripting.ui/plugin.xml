@@ -39,6 +39,17 @@
       </command>
       <command
             categoryId="com.codeandme.commands.category.scriptShell"
+            defaultHandler="com.codeandme.scripting.ui.handler.SwitchEngine"
+            id="com.codeandme.commands.scriptShell.switchEngine"
+            name="Switch script engine">
+         <commandParameter
+               id="com.codeandme.commands.scriptShell.switchEngine.id"
+               name="Script engine ID"
+               optional="false">
+         </commandParameter>
+      </command>
+      <command
+            categoryId="com.codeandme.commands.category.scriptShell"
             defaultHandler="com.codeandme.scripting.ui.handler.SpawnShell"
             id="com.codeandme.commands.scriptShell.newShell"
             name="Spawn new shell">
@@ -136,6 +147,13 @@
                visible="false">
          </separator>
          <command
+               commandId="com.codeandme.commands.scriptShell.newShell"
+               icon="images/shell_view.gif"
+               id="com.codeandme.commands.scriptShell.newShell.popup"
+               label="New shell"
+               style="push">
+         </command>
+         <command
                commandId="com.codeandme.commands.scriptShell.reset"
                icon="platform:/plugin/org.eclipse.equinox.p2.ui/icons/obj/iu_update_obj.gif"
                label="Reset"
@@ -170,9 +188,11 @@
                visible="false">
          </separator>
          <command
-               commandId="com.codeandme.commands.scriptShell.newShell"
-               label="New shell"
-               style="push">
+               commandId="com.codeandme.commands.scriptShell.switchEngine"
+               icon="images/engine.png"
+               id="com.codeandme.commands.scriptShell.switchEngine.popup"
+               label="Switch engine"
+               style="pulldown">
          </command>
       </menuContribution>
    </extension>
@@ -192,6 +212,16 @@
             protocol="macro"
             serviceClass="com.codeandme.scripting.ui.macro.MacroURLStreamHandler">
       </urlStreamHandlerService>
+   </extension>
+   <extension
+         point="org.eclipse.core.expressions.propertyTesters">
+      <propertyTester
+            class="com.codeandme.scripting.ui.propertytester.ScriptEnginePropertyTester"
+            id="com.codeandme.propertyTester.scriptEngineID"
+            namespace="com.codeandme.scripting.ui"
+            properties="engineID"
+            type="org.eclipse.ui.IViewPart">
+      </propertyTester>
    </extension>
 
 </plugin>

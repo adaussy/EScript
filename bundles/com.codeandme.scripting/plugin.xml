@@ -27,5 +27,12 @@
          </adapter>
       </factory>
    </extension>
+   <extension
+         point="org.eclipse.ecf.filetransfer.urlStreamHandlerService">
+      <urlStreamHandlerService
+            protocol="workspace"
+            serviceClass="com.codeandme.scripting.urlhandler.WorkspaceURLStreamHandlerService">
+      </urlStreamHandlerService>
+   </extension>
 
 </plugin>

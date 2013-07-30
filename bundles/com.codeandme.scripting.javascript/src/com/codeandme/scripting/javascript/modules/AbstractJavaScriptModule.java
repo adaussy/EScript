@@ -2,6 +2,7 @@ package com.codeandme.scripting.javascript.modules;
 
 import com.codeandme.scripting.IScriptEngine;
 import com.codeandme.scripting.javascript.JavaScriptTools;
+import com.codeandme.scripting.javascript.rhino.modules.EnvironmentModule;
 
 /**
  * Abstract base class for IJavaScriptModule implementations. Provides a quite useful default implementation for initialize(). All methods annotated with @WrapToJavaScript

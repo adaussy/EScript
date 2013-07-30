@@ -5,5 +5,5 @@ Bundle-SymbolicName: com.codeandme.scripting.python.jython;singleton:=true
 Bundle-Version: 1.0.0.qualifier
 Bundle-Vendor: CODEANDME
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
-Require-Bundle: com.codeandme.scripting,
+Require-Bundle: com.codeandme.scripting;bundle-version="1.0.0",
  org.jython;bundle-version="2.5.3"

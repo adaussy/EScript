@@ -61,5 +61,48 @@
             sourcePathComputerId="org.eclipse.wst.jsdt.debug.rhino.ui.source.path.computer">
       </launchConfigurationType>
    </extension>
+   <extension
+         point="org.eclipse.ui.commands">
+      <command
+            categoryId="com.codeandme.commands.category.scriptShell"
+            defaultHandler="com.codeandme.scripting.javascript.rhino.ui.commands.LoadModule"
+            id="com.codeandme.commands.scriptShell.loadModule"
+            name="Load Module">
+         <commandParameter
+               id="com.codeandme.commands.scriptShell.loadModule.moduleID"
+               name="Module ID"
+               optional="true">
+         </commandParameter>
+      </command>
+   </extension>
+   <extension
+         point="org.eclipse.ui.menus">
+      <menuContribution
+            locationURI="toolbar:com.codeandme.views.scriptShell?before=top">
+         <command
+               commandId="com.codeandme.commands.scriptShell.loadModule"
+               icon="images/libraries.gif"
+               id="com.codeandme.commands.scriptShell.loadModule.popup"
+               label="Load Module"
+               style="pulldown"
+               tooltip="Load an external module">
+            <visibleWhen
+                  checkEnabled="true">
+               <with
+                     variable="activePart">
+                  <test
+                        property="com.codeandme.scripting.ui.engineID"
+                        value="com.codeandme.scripting.javascript.rhino">
+                  </test>
+               </with>
+            </visibleWhen>
+         </command>
+      </menuContribution>
+      <menuContribution
+            allPopups="false"
+            class="com.codeandme.scripting.javascript.rhino.ui.commands.MolduleContributionFactory"
+            locationURI="menu:com.codeandme.commands.scriptShell.loadModule.popup">
+      </menuContribution>
+   </extension>
 
 </plugin>
