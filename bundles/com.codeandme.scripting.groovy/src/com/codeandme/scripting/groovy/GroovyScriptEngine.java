@@ -8,8 +8,9 @@ import java.io.InputStreamReader;
 import java.io.PrintStream;
 
 import com.codeandme.scripting.AbstractScriptEngine;
+import com.codeandme.scripting.IModifiableScriptEngine;
 
-public class GroovyScriptEngine extends AbstractScriptEngine {
+public class GroovyScriptEngine extends AbstractScriptEngine implements IModifiableScriptEngine {
 
     private GroovyShell mEngine;
 
@@ -79,5 +80,15 @@ public class GroovyScriptEngine extends AbstractScriptEngine {
         }
 
         return result;
+    }
+
+    @Override
+    public void setVariable(final String name, final Object content) {
+        mEngine.setVariable(name, content);
+    }
+
+    @Override
+    public Object getVariable(final String name) {
+        return mEngine.getVariable(name);
     }
 }

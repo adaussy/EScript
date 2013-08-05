@@ -11,6 +11,14 @@
       <scriptType
             type=" Groovy">
       </scriptType>
+      <moduleWrapper
+            class="com.codeandme.scripting.groovy.GroovyWrapper"
+            engineID="com.codeandme.scripting.groovy">
+      </moduleWrapper>
+      <launchExtension
+            class="com.codeandme.scripting.modules.BootStrapper"
+            engineID="com.codeandme.scripting.groovy">
+      </launchExtension>
    </extension>
 
 </plugin>
