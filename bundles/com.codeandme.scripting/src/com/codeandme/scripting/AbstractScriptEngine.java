@@ -10,6 +10,7 @@
  *******************************************************************************/
 package com.codeandme.scripting;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintStream;
 import java.util.ArrayList;
@@ -108,6 +109,7 @@ public abstract class AbstractScriptEngine extends Job implements IScriptEngine 
 
         synchronized (script.getResult()) {
 
+            InputStream code = null;
             try {
                 mFileTrace.push(script.getFile());
 
@@ -115,7 +117,7 @@ public abstract class AbstractScriptEngine extends Job implements IScriptEngine 
                 if (notifyListeners)
                     notifyExecutionListeners(script, IExecutionListener.SCRIPT_START);
 
-                final InputStream code = script.getCode();
+                code = script.getCode();
                 if (code != null) {
                     script.setResult(execute(code, script.getFile(), mFileTrace.peek().getFileName()));
                 } else
@@ -139,6 +141,13 @@ public abstract class AbstractScriptEngine extends Job implements IScriptEngine 
                     notifyExecutionListeners(script, IExecutionListener.SCRIPT_END);
 
                 mFileTrace.pop();
+
+                // gracefully close input stream
+                if (code != null)
+                    try {
+                        code.close();
+                    } catch (IOException e) {
+                    }
             }
         }
 

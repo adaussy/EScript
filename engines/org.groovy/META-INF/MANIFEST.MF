@@ -112,3 +112,5 @@ Export-Package: groovy.beans,
  org.codehaus.groovy.vmplugin.v6,
  org.example
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Eclipse-BuddyPolicy: global
+

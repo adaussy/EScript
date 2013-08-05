@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension
+         point="com.codeandme.scripting.language">
+      <engine
+            class="com.codeandme.scripting.groovy.GroovyScriptEngine"
+            id="com.codeandme.scripting.groovy"
+            name="Groovy">
+      </engine>
+      <scriptType
+            type=" Groovy">
+      </scriptType>
+   </extension>
+
+</plugin>
