@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Jruby
 Bundle-SymbolicName: org.jruby
-Bundle-Version: 1.0.0
+Bundle-Version: 1.7.4.qualifier
 Bundle-ClassPath: .
 Export-Package: com.headius.invokebinder,
  com.headius.invokebinder.transform,
