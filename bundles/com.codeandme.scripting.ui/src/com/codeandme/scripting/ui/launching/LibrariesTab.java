@@ -8,10 +8,11 @@
  * Contributors:
  *     Christian Pontesegger - initial API and implementation
  *******************************************************************************/
-package com.codeandme.scripting.javascript.rhino.ui.launching.tabs;
+package com.codeandme.scripting.ui.launching;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import org.eclipse.core.runtime.CoreException;
@@ -34,8 +35,6 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Label;
 
-import com.codeandme.scripting.javascript.rhino.ui.launching.LaunchConstants;
-
 public class LibrariesTab extends AbstractLaunchConfigurationTab implements ILaunchConfigurationTab {
 
     private static String serializeLibraries(final List<File> libraries) {
@@ -49,6 +48,16 @@ public class LibrariesTab extends AbstractLaunchConfigurationTab implements ILau
             result.delete(0, File.pathSeparator.length());
 
         return result.toString();
+    }
+
+    private static Collection<File> unserializeLibraries(final String libraries) {
+        final String[] elements = libraries.split(File.pathSeparator);
+        final List<File> result = new ArrayList<File>(elements.length);
+        for (final String element : elements)
+            if (!element.trim().isEmpty())
+                result.add(new File(element.trim()));
+
+        return result;
     }
 
     private final List<File> mLibraries = new ArrayList<File>();
@@ -65,7 +74,7 @@ public class LibrariesTab extends AbstractLaunchConfigurationTab implements ILau
 
         try {
             final String libraries = configuration.getAttribute(LaunchConstants.LIBRARIES, "");
-            mLibraries.addAll(LaunchConstants.unserializeLibraries(libraries));
+            mLibraries.addAll(unserializeLibraries(libraries));
         } catch (final CoreException e) {
         }
 
@@ -96,7 +105,7 @@ public class LibrariesTab extends AbstractLaunchConfigurationTab implements ILau
         topControl.setLayout(new GridLayout(2, false));
 
         final Label lblStartupCode = new Label(topControl, SWT.NONE);
-        lblStartupCode.setText("JAR files to load:");
+        lblStartupCode.setText("Additional libraries:");
 
         setControl(topControl);
         new Label(topControl, SWT.NONE);

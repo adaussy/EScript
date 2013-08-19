@@ -1,18 +1,8 @@
-/*******************************************************************************
- * Copyright (c) 2013 Christian Pontesegger and others.
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
- *
- * Contributors:
- *     Christian Pontesegger - initial API and implementation
- *******************************************************************************/
 package com.codeandme.scripting.javascript.rhino.debugger;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
-import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.debug.core.DebugException;
@@ -23,50 +13,49 @@ import org.eclipse.wst.jsdt.debug.core.model.JavaScriptDebugModel;
 import org.eclipse.wst.jsdt.debug.internal.core.JavaScriptDebugPlugin;
 import org.eclipse.wst.jsdt.debug.internal.core.breakpoints.JavaScriptLoadBreakpoint;
 import org.eclipse.wst.jsdt.debug.internal.core.model.JavaScriptDebugTarget;
+import org.eclipse.wst.jsdt.debug.internal.rhino.debugger.Breakpoint;
 import org.eclipse.wst.jsdt.debug.internal.rhino.debugger.RhinoDebuggerImpl;
 import org.eclipse.wst.jsdt.debug.internal.rhino.transport.RhinoTransportService;
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.debug.DebuggableScript;
 
-public class InfineonDebuggerImpl extends RhinoDebuggerImpl {
+public class LocalDebuggerImpl extends RhinoDebuggerImpl {
 
-    private String mStep = null;
-    private String mIncludeStep = null;
-    private boolean mInclude = false;
-    private boolean mFirstContinue = true;
-    private IFile mFile = null;
     private final boolean mStopAtLaunch;
+    private final boolean mShowGeneratedFiles;
     private static IJavaScriptLoadBreakpoint allLoadsBreakpoint = null;
+    private final ArrayList disabledThreads = new ArrayList();
+    private boolean mFirstFile = true;
 
-    public InfineonDebuggerImpl(final IFile file, final boolean stopAtLaunch, final String address) {
+    private long currentBreakpointId = 0L;
+
+    public LocalDebuggerImpl(final boolean stopAtLaunch, final boolean showGeneratedFiles, final String address) {
         super(new RhinoTransportService(), address, false, false);
-        mFile = file;
+
         mStopAtLaunch = stopAtLaunch;
+        mShowGeneratedFiles = showGeneratedFiles;
+
     }
 
     @Override
     public void handleCompilationDone(final Context context, final DebuggableScript script, final String source) {
 
         // Ignore unnamed script files for the debug process
-        if (!script.getSourceName().equals("unnamed script")) {
+        if ((mShowGeneratedFiles == true) || ((mShowGeneratedFiles == false) && !script.getSourceName().equals("unnamed script"))) {
 
-            if (mStep != null) {
-                mIncludeStep = mStep;
-                mInclude = true;
-            }
-
-            if ((mFirstContinue == true) && (mStopAtLaunch == true)) {
+            if (mFirstFile && (mStopAtLaunch == true)) {
 
                 IJavaScriptLoadBreakpoint breakpoint = null;
                 try {
+
                     HashMap map = new HashMap();
                     map.put(JavaScriptLoadBreakpoint.GLOBAL_SUSPEND, Boolean.TRUE);
-                    breakpoint = JavaScriptDebugModel.createScriptLoadBreakpoint(ResourcesPlugin.getWorkspace().getRoot(), -1, -1, map, false);
+                    breakpoint = JavaScriptDebugModel.createScriptLoadBreakpoint(ResourcesPlugin.getWorkspace().getRoot(), 0, 0, map, true);
                     breakpoint.setPersisted(false); // do not persist - https://bugs.eclipse.org/bugs/show_bug.cgi?id=323152
+
                 } catch (DebugException e) {
                     JavaScriptDebugPlugin.log(e);
                 } catch (CoreException e) {
-                    // TODO Auto-generated catch block
                     e.printStackTrace();
                 }
 
@@ -80,8 +69,8 @@ public class InfineonDebuggerImpl extends RhinoDebuggerImpl {
                         }
                     }
                 }
-                mFirstContinue = false;
-            } else {
+
+            } else if ((mFirstFile == false) && (mStopAtLaunch == true)) {
 
                 if (allLoadsBreakpoint != null) {
                     // notify all the targets
@@ -100,7 +89,7 @@ public class InfineonDebuggerImpl extends RhinoDebuggerImpl {
                     }
                 }
             }
-
+            mFirstFile = false;
             super.handleCompilationDone(context, script, source);
 
         }
@@ -108,14 +97,22 @@ public class InfineonDebuggerImpl extends RhinoDebuggerImpl {
     }
 
     @Override
-    public synchronized void resume(final Long threadId, String stepType) {
-        // Replace the step type, if a included File set it to null
-        mStep = stepType;
-        if (mInclude) {
-            stepType = mIncludeStep;
-            mInclude = false;
-        }
+    // Set the id of the current breakpoint
+    public synchronized Breakpoint setBreakpoint(final Long scriptId, final Integer lineNumber, final String functionName, final String condition,
+            final Long threadId) {
+        currentBreakpointId = new Long(currentBreakpointId++);
+        return super.setBreakpoint(scriptId, lineNumber, functionName, condition, threadId);
+    }
 
-        super.resume(threadId, stepType);
+    @Override
+    public synchronized void contextCreated(final Context context) {
+        super.contextCreated(context);
+        LocalThreadData infineonThreadData = new LocalThreadData((long) 0, this);
+        infineonThreadData.contextCreated(context);
+    }
+
+    // Make the id of the current breakpoint for the class InfineonContextData visible
+    public Long getBreakpointId() {
+        return currentBreakpointId;
     }
 }

@@ -246,5 +246,12 @@
             type="org.eclipse.ui.IViewPart">
       </propertyTester>
    </extension>
+   <extension
+         point="org.eclipse.debug.core.launchConfigurationTypes">
+      <launchConfigurationType
+            id="com.codeandme.scripting.ui.launchConfigurationType1"
+            name="name">
+      </launchConfigurationType>
+   </extension>
 
 </plugin>

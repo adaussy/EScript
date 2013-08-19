@@ -27,11 +27,11 @@
    <extension
          point="org.eclipse.debug.ui.launchShortcuts">
       <shortcut
-            class="com.codeandme.scripting.javascript.rhino.ui.launching.JavaScriptLaunchShortcut"
+            class="com.codeandme.scripting.javascript.rhino.ui.launching.LaunchShortcut"
             description="Run a JavaScript file"
             icon="images/rhino.gif"
             id="com.codeandme.launchShortcut.rhino"
-            label="Rhino JavaScript"
+            label="EScript JavaScript (Rhino)"
             modes="run,debug">
          <contextualLaunch>
             <enablement>
@@ -41,10 +41,16 @@
                <iterate
                      ifEmpty="false"
                      operator="or">
-                  <test
-                        property="org.eclipse.debug.ui.matchesPattern"
-                        value="js">
-                  </test>
+                  <or>
+                     <test
+                           property="org.eclipse.debug.ui.matchesPattern"
+                           value="js">
+                     </test>
+                     <test
+                           property="org.eclipse.debug.ui.matchesPattern"
+                           value="javascript">
+                     </test>
+                  </or>
                </iterate>
             </enablement>
          </contextualLaunch>
@@ -56,7 +62,7 @@
             delegate="com.codeandme.scripting.javascript.rhino.ui.launching.LaunchDelegate"
             id="com.codeandme.launchConfigurationType.rhino"
             modes="run,debug"
-            name="Rhino JavaScript"
+            name="EScript JavaScript (Rhino)"
             sourceLocatorId="org.eclipse.wst.jsdt.debug.rhino.ui.source.locator"
             sourcePathComputerId="org.eclipse.wst.jsdt.debug.rhino.ui.source.path.computer">
       </launchConfigurationType>

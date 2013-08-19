@@ -15,18 +15,15 @@ import org.eclipse.debug.ui.CommonTab;
 import org.eclipse.debug.ui.ILaunchConfigurationDialog;
 import org.eclipse.debug.ui.ILaunchConfigurationTab;
 
-import com.codeandme.scripting.javascript.rhino.ui.launching.tabs.EngineTab;
-import com.codeandme.scripting.javascript.rhino.ui.launching.tabs.GlobalTab;
-import com.codeandme.scripting.javascript.rhino.ui.launching.tabs.LibrariesTab;
+import com.codeandme.scripting.ui.launching.MainTab;
 
-public class LaunchConfigurationTabGroup extends
-		AbstractLaunchConfigurationTabGroup {
+public class LaunchConfigurationTabGroup extends AbstractLaunchConfigurationTabGroup {
 
-	public LaunchConfigurationTabGroup() {
-	}
+    public LaunchConfigurationTabGroup() {
+    }
 
-	@Override
-	public void createTabs(ILaunchConfigurationDialog dialog, String mode) {
-		setTabs(new ILaunchConfigurationTab[] {new GlobalTab(), new LibrariesTab(), new EngineTab(), new CommonTab()});
-	}
+    @Override
+    public void createTabs(final ILaunchConfigurationDialog dialog, final String mode) {
+        setTabs(new ILaunchConfigurationTab[] { new MainTab(new String[] { "js", "javascript" }), new CommonTab() });
+    }
 }

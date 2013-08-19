@@ -10,17 +10,32 @@
  *******************************************************************************/
 package com.codeandme.scripting.javascript.rhino.ui.launching;
 
+import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.ui.PlatformUI;
 
 import com.codeandme.scripting.IScriptEngine;
 import com.codeandme.scripting.IScriptService;
-import com.codeandme.scripting.ui.launching.AbstractLaunchDelegate;
+import com.codeandme.scripting.ui.launching.AbstractLaunchShortcut;
 
-public class LaunchDelegate extends AbstractLaunchDelegate {
+/**
+ * Quick launcher for JavaScript files.
+ */
+public class LaunchShortcut extends AbstractLaunchShortcut {
 
     @Override
-    protected IScriptEngine getScriptEngine() {
+    protected IScriptEngine getScriptEngine(final ILaunchConfiguration configuration, final String mode) {
         IScriptService scriptService = (IScriptService) PlatformUI.getWorkbench().getService(IScriptService.class);
-        return scriptService.createEngineByID("com.codeandme.scripting.javascript.rhino");
+        if (MODE_RUN.equals(mode))
+            return scriptService.createEngineByID("com.codeandme.scripting.javascript.rhino");
+
+        else if (MODE_DEBUG.equals(mode))
+            return scriptService.createEngineByID("com.codeandme.scripting.javascript.rhino.debug");
+
+        return null;
+    }
+
+    @Override
+    protected String getLaunchConfigurationType() {
+        return "com.codeandme.launchConfigurationType.rhino";
     }
 }
