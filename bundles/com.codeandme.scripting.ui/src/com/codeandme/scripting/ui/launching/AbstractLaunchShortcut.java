@@ -29,6 +29,7 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.FileEditorInput;
 
 import com.codeandme.scripting.IScriptEngine;
+import com.codeandme.scripting.ui.console.ScriptConsole;
 
 /**
  * Quick launcher for JavaScript files.
@@ -55,23 +56,14 @@ public abstract class AbstractLaunchShortcut implements ILaunchShortcut, ILaunch
 
             try {
                 ILaunchConfiguration configuration = createLaunchConfiguration((IFile) scriptFile, mode);
-                launch(configuration, mode);
+                // TODO add nice progress monitor
+                configuration.launch(mode, null);
 
             } catch (CoreException e) {
                 // could not create launch configuration, run script directly
                 launch((IFile) scriptFile, null, mode);
             }
         }
-    }
-
-    private void launch(final ILaunchConfiguration configuration, final String mode) throws CoreException {
-
-        String projectName = configuration.getAttribute(LaunchConstants.PROJECT, "");
-        String scriptLocation = configuration.getAttribute(LaunchConstants.SCRIPT_LOCATION, "");
-
-        IFile script = ResourcesPlugin.getWorkspace().getRoot().getProject(projectName).getFile(scriptLocation);
-
-        launch(script, configuration, mode);
     }
 
     /**
@@ -83,10 +75,9 @@ public abstract class AbstractLaunchShortcut implements ILaunchShortcut, ILaunch
     private void launch(final IFile file, final ILaunchConfiguration configuration, final String mode) {
         IScriptEngine engine = getScriptEngine(configuration, mode);
 
-        // FIXME add console support
-        // final JavaScriptConsole console = JavaScriptConsoleFactory.createConsole("JavaScript: " + file.getName(), engine);
-        // engine.setOutputStream(console.getOutputStream());
-        // engine.setErrorStream(console.getErrorStream());
+        ScriptConsole console = ScriptConsole.create(engine);
+        engine.setOutputStream(console.getOutputStream());
+        engine.setErrorStream(console.getErrorStream());
 
         engine.setTerminateOnIdle(true);
         engine.executeAsync(file);

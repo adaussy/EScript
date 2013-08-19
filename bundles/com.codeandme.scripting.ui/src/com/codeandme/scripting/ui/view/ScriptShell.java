@@ -54,8 +54,7 @@ import com.codeandme.scripting.IScriptEngineProvider;
 import com.codeandme.scripting.IScriptService;
 import com.codeandme.scripting.Script;
 import com.codeandme.scripting.ui.Activator;
-import com.codeandme.scripting.ui.console.JavaScriptConsole;
-import com.codeandme.scripting.ui.console.JavaScriptConsoleFactory;
+import com.codeandme.scripting.ui.console.ScriptConsole;
 import com.codeandme.scripting.ui.dnd.ShellDropTarget;
 import com.codeandme.scripting.ui.macro.IMacroSupport;
 import com.codeandme.scripting.ui.macro.MacroContributionFactory;
@@ -91,7 +90,7 @@ public class ScriptShell extends ViewPart implements IMacroSupport, IPropertyCha
 
     private IScriptEngine mScriptEngine;
     private IMemento mInitMemento;
-    private JavaScriptConsole mConsole = null;
+    private ScriptConsole mConsole = null;
     private final PipedInputStream mDefaultInputStream;
     private final PipedInputStream mErrorInputStream;
     private PipedOutputStream mDefaultOutputStream;
@@ -185,15 +184,16 @@ public class ScriptShell extends ViewPart implements IMacroSupport, IPropertyCha
      * 
      * @return instance of JavaScript console
      */
-    private JavaScriptConsole getConsole() {
+    private ScriptConsole getConsole() {
         if (mConsole == null) {
             // create console
-            mConsole = JavaScriptConsoleFactory.createConsole("JavaScript: Shell", mScriptEngine);
+
+            mConsole = ScriptConsole.create(mScriptEngine.getName() + " script shell", mScriptEngine);
             mConsole.addPropertyChangeListener(new IPropertyChangeListener() {
 
                 @Override
                 public void propertyChange(final PropertyChangeEvent event) {
-                    if (JavaScriptConsole.CONSOLE_ACTIVE.equals(event.getProperty())) {
+                    if (ScriptConsole.CONSOLE_ACTIVE.equals(event.getProperty())) {
                         mConsole = null;
                         configureOutputStreams();
                     }

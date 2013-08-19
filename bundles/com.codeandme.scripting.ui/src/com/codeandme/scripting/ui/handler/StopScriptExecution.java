@@ -19,7 +19,7 @@ import org.eclipse.ui.console.IConsole;
 import org.eclipse.ui.handlers.HandlerUtil;
 
 import com.codeandme.scripting.IScriptEngineProvider;
-import com.codeandme.scripting.ui.console.JavaScriptConsole;
+import com.codeandme.scripting.ui.console.ScriptConsole;
 
 public class StopScriptExecution extends AbstractHandler implements IHandler {
 
@@ -28,8 +28,8 @@ public class StopScriptExecution extends AbstractHandler implements IHandler {
         final IWorkbenchPart part = HandlerUtil.getActivePart(event);
         if (part instanceof org.eclipse.ui.internal.console.ConsoleView) {
             final IConsole console = ((org.eclipse.ui.internal.console.ConsoleView) part).getConsole();
-            if (console instanceof JavaScriptConsole)
-                ((JavaScriptConsole) console).stopScriptExecution();
+            if (console instanceof ScriptConsole)
+                ((ScriptConsole) console).stopScriptExecution();
 
         } else if (part instanceof IScriptEngineProvider)
             ((IScriptEngineProvider) part).getScriptEngine().terminateCurrent();

@@ -11,6 +11,7 @@ import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.model.ILaunchConfigurationDelegate;
 
 import com.codeandme.scripting.IScriptEngine;
+import com.codeandme.scripting.ui.console.ScriptConsole;
 
 public abstract class AbstractLaunchDelegate implements ILaunchConfigurationDelegate {
 
@@ -29,10 +30,10 @@ public abstract class AbstractLaunchDelegate implements ILaunchConfigurationDele
 
                 if (engine != null) {
 
-                    // TODO add generic script console output
-                    // final JavaScriptConsole console = JavaScriptConsoleFactory.createConsole("JavaScript: " + file.getName(), engine);
-                    // engine.setOutputStream(console.getOutputStream());
-                    // engine.setErrorStream(console.getErrorStream());
+                    ScriptConsole console = ScriptConsole.create(engine);
+                    console.setLaunch(launch);
+                    engine.setOutputStream(console.getOutputStream());
+                    engine.setErrorStream(console.getErrorStream());
 
                     engine.setTerminateOnIdle(true);
 
