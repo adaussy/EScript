@@ -33,4 +33,8 @@ public class ObservingContextFactory extends ContextFactory {
     public synchronized void terminate(final Context context) {
         mTerminationRequests.add(context);
     }
+
+    public void cancelTerminate(final Context context) {
+        mTerminationRequests.remove(context);
+    }
 }

@@ -18,7 +18,6 @@ import java.security.PrivilegedAction;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.regex.Pattern;
 
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.ContextFactory;
@@ -40,8 +39,6 @@ import com.codeandme.scripting.javascript.rhino.debugger.LineNumberDebugger.Line
  */
 public class RhinoScriptEngine extends AbstractScriptEngine implements IDebugEngine {
 
-    // public static final int MAGIC_NUMBER = RhinoScriptEngine.class.hashCode();
-
     static {
         // set context factory that is able to terminate script execution
         ContextFactory.initGlobal(new ObservingContextFactory());
@@ -62,8 +59,6 @@ public class RhinoScriptEngine extends AbstractScriptEngine implements IDebugEng
     private Context mContext;
 
     private int mOptimizationLevel = 9;
-
-    private boolean mLegacyMode = false;
 
     private boolean mCreateLineNumberInformation = false;
 
@@ -90,10 +85,6 @@ public class RhinoScriptEngine extends AbstractScriptEngine implements IDebugEng
         mOptimizationLevel = level;
     }
 
-    public void setLegacyMode() {
-        mLegacyMode = true;
-    }
-
     @Override
     protected synchronized boolean setupEngine() {
         mContext = getContext();
@@ -118,7 +109,7 @@ public class RhinoScriptEngine extends AbstractScriptEngine implements IDebugEng
 
         // enable script termination support
         mContext.setGenerateObserverCount(true);
-        mContext.setInstructionObserverThreshold(1000);
+        mContext.setInstructionObserverThreshold(10);
 
         return true;
     }
@@ -136,6 +127,9 @@ public class RhinoScriptEngine extends AbstractScriptEngine implements IDebugEng
 
     @Override
     protected Object execute(final InputStream code, final Object reference, final String fileName) throws Exception {
+        // remove an eventually cached terminate request
+        ((ObservingContextFactory) ContextFactory.getGlobal()).cancelTerminate(mContext);
+
         try {
             final Object result = getContext().evaluateReader(mScope, new InputStreamReader(code), fileName, 1, null);
 
@@ -193,7 +187,7 @@ public class RhinoScriptEngine extends AbstractScriptEngine implements IDebugEng
 
     @Override
     public void setVariable(final String name, final Object content) {
-        if (!isSaveName(name))
+        if (!RhinoModuleWrapper.isSaveName(name))
             throw new RuntimeException("\"" + name + "\" is not a valid JavaScript variable name");
 
         final Scriptable scope = getScope();
@@ -261,10 +255,6 @@ public class RhinoScriptEngine extends AbstractScriptEngine implements IDebugEng
         } else {
             return getContext().getWrapFactory().wrap(getContext(), scope, value, null);
         }
-    }
-
-    public static boolean isSaveName(final String identifier) {
-        return Pattern.matches("[a-zA-Z_$][a-zA-Z0-9_$]*", identifier);
     }
 
     public void setCreateLineNumberInformation(final boolean createLineNumberInformation) {

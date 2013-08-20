@@ -143,15 +143,6 @@
    <extension
          point="org.eclipse.ui.menus">
       <menuContribution
-            allPopups="false"
-            locationURI="toolbar:org.eclipse.ui.console.ConsoleView">
-         <command
-               commandId="com.codeandme.commands.scriptShell.stop"
-               icon="platform:/plugin/org.eclipse.debug.ui/icons/full/elcl16/terminate_co.gif"
-               style="push">
-         </command>
-      </menuContribution>
-      <menuContribution
             locationURI="toolbar:com.codeandme.views.scriptShell">
          <separator
                name="top"

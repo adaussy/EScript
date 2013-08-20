@@ -18,11 +18,11 @@ import com.codeandme.scripting.ui.console.ScriptConsole;
 /**
  * ConsoleRemoveTerminatedAction
  */
-public class ConsoleRemoveLaunchAction extends Action implements IExecutionListener {
+public class RemoveCurrentConsoleAction extends Action implements IExecutionListener {
 
     private ScriptConsole mConsole;
 
-    public ConsoleRemoveLaunchAction() {
+    public RemoveCurrentConsoleAction() {
         super(ConsoleMessages.ConsoleRemoveTerminatedAction_0);
         setToolTipText(ConsoleMessages.ConsoleRemoveTerminatedAction_1);
         PlatformUI.getWorkbench().getHelpSystem().setHelp(this, IDebugHelpContextIds.CONSOLE_REMOVE_LAUNCH);
@@ -31,7 +31,7 @@ public class ConsoleRemoveLaunchAction extends Action implements IExecutionListe
         setHoverImageDescriptor(DebugPluginImages.getImageDescriptor(IInternalDebugUIConstants.IMG_ELCL_REMOVE));
     }
 
-    public ConsoleRemoveLaunchAction(final ScriptConsole console) {
+    public RemoveCurrentConsoleAction(final ScriptConsole console) {
         this();
         mConsole = console;
         IScriptEngine engine = mConsole.getScriptEngine();

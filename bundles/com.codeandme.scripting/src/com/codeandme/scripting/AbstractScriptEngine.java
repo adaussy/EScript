@@ -132,10 +132,6 @@ public abstract class AbstractScriptEngine extends Job implements IScriptEngine 
 
             } catch (final Exception e) {
                 script.setException(e);
-                // DEBUG
-                e.printStackTrace();
-                // end DEBUG
-
                 getErrorStream().println(e.getLocalizedMessage());
 
             } finally {
@@ -244,6 +240,11 @@ public abstract class AbstractScriptEngine extends Job implements IScriptEngine 
     @Override
     public final void setTerminateOnIdle(final boolean terminate) {
         mTerminateOnIdle = terminate;
+    }
+
+    @Override
+    public boolean getTerminateOnIdle() {
+        return mTerminateOnIdle;
     }
 
     /**

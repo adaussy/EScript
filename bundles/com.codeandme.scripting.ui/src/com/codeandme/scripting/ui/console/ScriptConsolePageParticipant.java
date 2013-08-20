@@ -14,9 +14,7 @@ import java.io.IOException;
 
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
-import org.eclipse.debug.core.DebugEvent;
 import org.eclipse.debug.core.DebugPlugin;
-import org.eclipse.debug.core.IDebugEventSetListener;
 import org.eclipse.debug.core.ILaunch;
 import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.model.IDebugTarget;
@@ -31,7 +29,6 @@ import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.TreePath;
 import org.eclipse.jface.viewers.TreeSelection;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.console.IConsole;
 import org.eclipse.ui.console.IConsoleConstants;
@@ -47,23 +44,23 @@ import org.eclipse.ui.part.IShowInSource;
 import org.eclipse.ui.part.IShowInTargetList;
 import org.eclipse.ui.part.ShowInContext;
 
-import com.codeandme.scripting.ui.console.actions.ConsoleRemoveAllTerminatedAction;
-import com.codeandme.scripting.ui.console.actions.ConsoleRemoveLaunchAction;
-import com.codeandme.scripting.ui.console.actions.ConsoleTerminateAction;
+import com.codeandme.scripting.ui.console.actions.RemoveAllTerminatedConsolesAction;
+import com.codeandme.scripting.ui.console.actions.RemoveCurrentConsoleAction;
 import com.codeandme.scripting.ui.console.actions.ShowStandardErrorAction;
 import com.codeandme.scripting.ui.console.actions.ShowStandardOutAction;
 import com.codeandme.scripting.ui.console.actions.ShowWhenContentChangesAction;
+import com.codeandme.scripting.ui.console.actions.TerminateConsoleAction;
 
 /**
  * Creates and manages JavaScript console specific actions
  * 
  */
-public class ScriptConsolePageParticipant implements IConsolePageParticipant, IShowInSource, IShowInTargetList, IDebugEventSetListener, IDebugContextListener {
+public class ScriptConsolePageParticipant implements IConsolePageParticipant, IShowInSource, IShowInTargetList, IDebugContextListener {
 
     // actions
-    private ConsoleTerminateAction fTerminate;
-    private ConsoleRemoveLaunchAction fRemoveTerminated;
-    private ConsoleRemoveAllTerminatedAction fRemoveAllTerminated;
+    private TerminateConsoleAction fTerminate;
+    private RemoveCurrentConsoleAction fRemoveTerminated;
+    private RemoveAllTerminatedConsolesAction fRemoveAllTerminated;
     private ShowWhenContentChangesAction fStdOut;
     private ShowWhenContentChangesAction fStdErr;
 
@@ -106,17 +103,16 @@ public class ScriptConsolePageParticipant implements IConsolePageParticipant, IS
     public void init(final IPageBookViewPage page, final IConsole console) {
         fPage = page;
         fConsole = (ScriptConsole) console;
-        // FIXME implement
-        fRemoveTerminated = new ConsoleRemoveLaunchAction(fConsole);
-        fRemoveAllTerminated = new ConsoleRemoveAllTerminatedAction();
-        // FIXME implement
-        // fTerminate = new ConsoleTerminateAction(page.getSite().getWorkbenchWindow(), fConsole);
+        fConsole.setPageParticipant(this);
+
+        fRemoveTerminated = new RemoveCurrentConsoleAction(fConsole);
+        fRemoveAllTerminated = new RemoveAllTerminatedConsolesAction();
+        fTerminate = new TerminateConsoleAction(page.getSite().getWorkbenchWindow(), fConsole);
         fStdOut = new ShowStandardOutAction(console);
         fStdErr = new ShowStandardErrorAction(console);
 
         fView = (IConsoleView) fPage.getSite().getPage().findView(IConsoleConstants.ID_CONSOLE_VIEW);
 
-        DebugPlugin.getDefault().addDebugEventListener(this);
         DebugUITools.getDebugContextManager().getContextService(fPage.getSite().getWorkbenchWindow()).addDebugContextListener(this);
 
         // contribute to toolbar
@@ -134,8 +130,9 @@ public class ScriptConsolePageParticipant implements IConsolePageParticipant, IS
      */
     @Override
     public void dispose() {
+        fConsole.setPageParticipant(null);
+
         DebugUITools.getDebugContextManager().getContextService(fPage.getSite().getWorkbenchWindow()).removeDebugContextListener(this);
-        DebugPlugin.getDefault().removeDebugEventListener(this);
         fRemoveTerminated = null;
         fRemoveAllTerminated = null;
 
@@ -158,7 +155,7 @@ public class ScriptConsolePageParticipant implements IConsolePageParticipant, IS
      * Contribute actions to the toolbar
      */
     protected void configureToolBar(final IToolBarManager mgr) {
-        // mgr.appendToGroup(IConsoleConstants.LAUNCH_GROUP, fTerminate);
+        mgr.appendToGroup(IConsoleConstants.LAUNCH_GROUP, fTerminate);
         mgr.appendToGroup(IConsoleConstants.LAUNCH_GROUP, fRemoveTerminated);
         mgr.appendToGroup(IConsoleConstants.LAUNCH_GROUP, fRemoveAllTerminated);
         mgr.appendToGroup(IConsoleConstants.OUTPUT_GROUP, fStdOut);
@@ -220,30 +217,6 @@ public class ScriptConsolePageParticipant implements IConsolePageParticipant, IS
         return new String[] { IDebugUIConstants.ID_DEBUG_VIEW };
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.eclipse.debug.core.IDebugEventSetListener#handleDebugEvents(org.eclipse.debug.core.DebugEvent[])
-     */
-    @Override
-    public void handleDebugEvents(final DebugEvent[] events) {
-        for (int i = 0; i < events.length; i++) {
-            DebugEvent event = events[i];
-            if (event.getSource().equals(getProcess())) {
-                Runnable r = new Runnable() {
-                    @Override
-                    public void run() {
-                        if (fTerminate != null) {
-                            fTerminate.update();
-                        }
-                    }
-                };
-
-                Display.getDefault().asyncExec(r);
-            }
-        }
-    }
-
     protected IProcess getProcess() {
         // FIXME implement
         // return fConsole != null ? fConsole.getProcess() : null;
@@ -301,57 +274,8 @@ public class ScriptConsolePageParticipant implements IConsolePageParticipant, IS
 
     }
 
-    // // actions
-    // private JavaScriptConsoleRemoveAction fRemoveTerminated;
-    // private JavaScriptConsoleRemoveAllAction fRemoveAllTerminated;
-    //
-    // /* (non-Javadoc)
-    // * @see org.eclipse.ui.console.IConsolePageParticipant#init(IPageBookViewPage, IConsole)
-    // */
-    // public void init(IPageBookViewPage page, IConsole console) {
-    // IPageBookViewPage fPage = page;
-    // ScriptConsole fConsole = (ScriptConsole) console;
-    //
-    // fRemoveTerminated = new JavaScriptConsoleRemoveAction(fConsole);
-    // fRemoveAllTerminated = new JavaScriptConsoleRemoveAllAction();
-    //
-    // // contribute to toolbar
-    // IActionBars actionBars = fPage.getSite().getActionBars();
-    // configureToolBar(actionBars.getToolBarManager());
-    //
-    // }
-    //
-    // /* (non-Javadoc)
-    // * @see org.eclipse.ui.console.IConsolePageParticipant#dispose()
-    // */
-    // public void dispose() {
-    // fRemoveTerminated = null;
-    // fRemoveAllTerminated = null;
-    // }
-    //
-    // /**
-    // * Contribute actions to the toolbar
-    // */
-    // protected void configureToolBar(IToolBarManager mgr) {
-    // mgr.appendToGroup(IConsoleConstants.LAUNCH_GROUP, fRemoveTerminated);
-    // mgr.appendToGroup(IConsoleConstants.LAUNCH_GROUP, fRemoveAllTerminated);
-    // }
-    //
-    // /* (non-Javadoc)
-    // * @see org.eclipse.ui.console.IConsolePageParticipant#activated()
-    // */
-    // public void activated() { }
-    //
-    // /* (non-Javadoc)
-    // * @see org.eclipse.ui.console.IConsolePageParticipant#deactivated()
-    // */
-    // public void deactivated() {
-    //
-    // }
-    //
-    // @Override
-    // public Object getAdapter(Class arg0) {
-    // return null;
-    // }
-
+    public void engineChanged() {
+        if (fTerminate != null)
+            fTerminate.update();
+    }
 }

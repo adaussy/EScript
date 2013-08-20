@@ -188,7 +188,7 @@ public class ScriptShell extends ViewPart implements IMacroSupport, IPropertyCha
         if (mConsole == null) {
             // create console
 
-            mConsole = ScriptConsole.create(mScriptEngine.getName() + " script shell", mScriptEngine);
+            mConsole = ScriptConsole.create(mScriptEngine.getName() + " Script Shell", mScriptEngine);
             mConsole.addPropertyChangeListener(new IPropertyChangeListener() {
 
                 @Override
@@ -546,6 +546,7 @@ public class ScriptShell extends ViewPart implements IMacroSupport, IPropertyCha
         mScriptEngine.setTerminateOnIdle(false);
 
         configureOutputStreams();
+        getConsole().setScriptEngine(mScriptEngine);
 
         mScriptEngine.schedule();
 

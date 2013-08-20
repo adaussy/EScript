@@ -30,6 +30,7 @@ import com.codeandme.scripting.ui.preferences.PreferenceConstants;
 
 public class ScriptConsole extends IOConsole implements IExecutionListener, IScriptEngineProvider, IPropertyChangeListener {
 
+    private static final String TITLE_TERMINATED = " [terminated]";
     public static final String CONSOLE_ACTIVE = "ACTIVE";
 
     public static ScriptConsole create(final String title, final IScriptEngine engine) {
@@ -47,8 +48,9 @@ public class ScriptConsole extends IOConsole implements IExecutionListener, IScr
 
     private IOConsoleOutputStream mOutputStream = null;
     private IOConsoleOutputStream mErrorStream = null;
-    private IScriptEngine mEngine;
+    private IScriptEngine mEngine = null;
     private ILaunch mLaunch = null;
+    private ScriptConsolePageParticipant mScriptConsolePageParticipant;
 
     private ScriptConsole(final String name, final IScriptEngine engine) {
         this(name, getConsoleType(), null, engine);
@@ -57,9 +59,7 @@ public class ScriptConsole extends IOConsole implements IExecutionListener, IScr
     private ScriptConsole(final String name, final String consoleType, final ImageDescriptor imageDescriptor, final IScriptEngine engine) {
         super(name, consoleType, imageDescriptor, true);
 
-        mEngine = engine;
-        if (mEngine != null)
-            mEngine.addExecutionListener(this);
+        setScriptEngine(engine);
 
         initializeStreams();
 
@@ -101,32 +101,32 @@ public class ScriptConsole extends IOConsole implements IExecutionListener, IScr
 
     @Override
     protected void dispose() {
-        Activator.getDefault().getPreferenceStore().removePropertyChangeListener(this);
+        Activator activator = Activator.getDefault();
+        if (activator != null)
+            activator.getPreferenceStore().removePropertyChangeListener(this);
 
-        if (mEngine != null)
-            mEngine.removeExecutionListener(this);
-
-        // firePropertyChange(this, CONSOLE_ACTIVE, true, false);
+        setScriptEngine(null);
 
         super.dispose();
     }
 
     @Override
-    public void notify(final IScriptEngine engine, final Script script, final int status) {
-        switch (status) {
-            case ENGINE_END:
-                Display.getDefault().asyncExec(new Runnable() {
+    public synchronized void notify(final IScriptEngine engine, final Script script, final int status) {
+        // do not react on engines that are no longer tracked by this console
+        if (engine.equals(getScriptEngine())) {
+            switch (status) {
+                case ENGINE_END:
+                    Display.getDefault().asyncExec(new Runnable() {
 
-                    @Override
-                    public void run() {
-                        setName(getName() + " [terminated]");
-                    }
-                });
+                        @Override
+                        public void run() {
+                            setName(getName() + TITLE_TERMINATED);
+                        }
+                    });
 
-                // remove engine once terminated
-                engine.removeExecutionListener(this);
-                mEngine = null;
-                break;
+                    setScriptEngine(null);
+                    break;
+            }
         }
     }
 
@@ -152,5 +152,26 @@ public class ScriptConsole extends IOConsole implements IExecutionListener, IScr
 
         else if (property.equals(PreferenceConstants.CONSOLE_BASE + "." + getName() + "." + PreferenceConstants.CONSOLE_OPEN_ON_ERR))
             getErrorStream().setActivateOnWrite((Boolean) event.getNewValue());
+    }
+
+    public synchronized void setScriptEngine(final IScriptEngine scriptEngine) {
+        if ((scriptEngine == null) || (!scriptEngine.equals(mEngine))) {
+            // new engine detected
+
+            if (mEngine != null)
+                mEngine.removeExecutionListener(this);
+
+            mEngine = scriptEngine;
+
+            if (mEngine != null)
+                mEngine.addExecutionListener(this);
+
+            if (mScriptConsolePageParticipant != null)
+                mScriptConsolePageParticipant.engineChanged();
+        }
+    }
+
+    public void setPageParticipant(final ScriptConsolePageParticipant scriptConsolePageParticipant) {
+        mScriptConsolePageParticipant = scriptConsolePageParticipant;
     }
 }

@@ -101,6 +101,13 @@ public interface IScriptEngine {
     void setTerminateOnIdle(final boolean terminate);
 
     /**
+     * Get termination condition when engine is idle.
+     * 
+     * @return <code>true</code> when engine is terminated when idle
+     */
+    boolean getTerminateOnIdle();
+
+    /**
      * Schedule script execution. This will start the script engine that either waits for input or immediate starts execution of previously scheduled input.
      */
     void schedule();

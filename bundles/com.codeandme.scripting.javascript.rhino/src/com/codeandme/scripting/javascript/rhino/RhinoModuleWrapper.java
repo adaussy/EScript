@@ -122,7 +122,7 @@ public class RhinoModuleWrapper implements IModuleWrapper {
 
     private static String getSaveName(final String identifier) {
         // check if name is already valid
-        if (Pattern.matches("[a-zA-Z_$][a-zA-Z0-9_$]*", identifier))
+        if (isSaveName(identifier))
             return identifier;
 
         // not valid, convert string to valid format
@@ -147,4 +147,9 @@ public class RhinoModuleWrapper implements IModuleWrapper {
 
         return buffer.toString();
     }
+
+    public static boolean isSaveName(final String identifier) {
+        return Pattern.matches("[a-zA-Z_$][a-zA-Z0-9_$]*", identifier);
+    }
+
 }

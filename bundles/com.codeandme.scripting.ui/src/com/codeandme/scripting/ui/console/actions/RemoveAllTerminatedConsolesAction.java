@@ -16,7 +16,7 @@ import com.codeandme.scripting.ui.console.ScriptConsole;
 /**
  * ConsoleRemoveAllTerminatedAction
  */
-public class ConsoleRemoveAllTerminatedAction extends Action {
+public class RemoveAllTerminatedConsolesAction extends Action {
 
     @Override
     public void run() {
@@ -32,7 +32,7 @@ public class ConsoleRemoveAllTerminatedAction extends Action {
         ConsolePlugin.getDefault().getConsoleManager().removeConsoles(candidates.toArray(new IConsole[candidates.size()]));
     }
 
-    public ConsoleRemoveAllTerminatedAction() {
+    public RemoveAllTerminatedConsolesAction() {
         super(ConsoleMessages.ConsoleRemoveAllTerminatedAction_0);
         PlatformUI.getWorkbench().getHelpSystem().setHelp(this, IDebugHelpContextIds.CONSOLE_REMOVE_ALL_TERMINATED);
         setToolTipText(ConsoleMessages.ConsoleRemoveAllTerminatedAction_1);
