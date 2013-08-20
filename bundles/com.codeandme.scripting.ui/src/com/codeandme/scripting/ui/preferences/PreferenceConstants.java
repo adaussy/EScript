@@ -20,9 +20,6 @@ public interface PreferenceConstants {
     String VALUE_OUTPUT_NONE = "None";
 
     String SHELL_BASE = "com.codeandme.scripting.shell.prefs";
-    String TARGET_STDOUT = "com.codeandme.scripting.shell.prefs.stdout";
-    String TARGET_RESULT = "com.codeandme.scripting.shell.prefs.result";
-    String TARGET_ERRORS = "com.codeandme.scripting.shell.prefs.errors";
 
     String INIT_COMMANDS = "com.codeandme.scripting.shell.prefs.initCommands";
 

@@ -11,7 +11,6 @@
 package com.codeandme.scripting.ui.preferences;
 
 import org.eclipse.jface.preference.FieldEditorPreferencePage;
-import org.eclipse.jface.preference.RadioGroupFieldEditor;
 import org.eclipse.jface.preference.StringFieldEditor;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
@@ -42,12 +41,6 @@ public class ShellPreferencePage extends FieldEditorPreferencePage implements IW
      */
     @Override
     public final void createFieldEditors() {
-        addField(new RadioGroupFieldEditor(PreferenceConstants.TARGET_RESULT, "Command Results Output", 3, new String[][] { { "Console", "Console" },
-                { "Shell", "Shell" }, { "None", "None" } }, getFieldEditorParent(), true));
-        addField(new RadioGroupFieldEditor(PreferenceConstants.TARGET_STDOUT, "Standard Output", 3, new String[][] { { "Console", "Console" },
-                { "Shell", "Shell" }, { "None", "None" } }, getFieldEditorParent(), true));
-        addField(new RadioGroupFieldEditor(PreferenceConstants.TARGET_ERRORS, "Error Output", 3, new String[][] { { "Console", "Console" },
-                { "Shell", "Shell" }, { "None", "None" } }, getFieldEditorParent(), true));
         {
             final TextFieldEditor stringFieldEditor = new TextFieldEditor(PreferenceConstants.INIT_COMMANDS, "Startup commands", -1,
                     StringFieldEditor.VALIDATE_ON_FOCUS_LOST, getFieldEditorParent());

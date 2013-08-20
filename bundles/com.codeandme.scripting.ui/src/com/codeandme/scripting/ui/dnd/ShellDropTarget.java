@@ -23,8 +23,9 @@ import org.eclipse.swt.dnd.TextTransfer;
 import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.widgets.Control;
 
-import com.codeandme.scripting.IScriptEngine;
+import com.codeandme.scripting.IScriptEngineProvider;
 import com.codeandme.scripting.ui.macro.Macro;
+import com.codeandme.scripting.ui.view.ScriptShell;
 
 /**
  * DND support for JavaScript shell. DND of plain text, files, resources and IDevices is supported.
@@ -34,7 +35,7 @@ public final class ShellDropTarget extends DropTargetAdapter {
     /**
      * JavaScript shell for DND execution.
      */
-    private final IScriptEngine mScriptEngine;
+    private final IScriptEngineProvider mScriptEngineProvider;
 
     /**
      * Add drop support for various objects. A drop will always be interpreted as <i>copy</i>, even if <i>move</i> was requested.
@@ -44,20 +45,20 @@ public final class ShellDropTarget extends DropTargetAdapter {
      * @param javaScriptShell
      *            shell for DND action execution
      */
-    public static void addDropSupport(final Control parent, final IScriptEngine engine) {
+    public static void addDropSupport(final Control parent, final ScriptShell scriptShell) {
         final DropTarget target = new DropTarget(parent, DND.DROP_COPY | DND.DROP_MOVE);
         target.setTransfer(new Transfer[] { FileTransfer.getInstance(), TextTransfer.getInstance(), LocalSelectionTransfer.getTransfer() });
-        target.addDropListener(new ShellDropTarget(engine));
+        target.addDropListener(new ShellDropTarget(scriptShell));
     }
 
     /**
      * Constructor.
      * 
-     * @param engine
+     * @param scriptShell
      *            shell for DND action execution
      */
-    private ShellDropTarget(final IScriptEngine engine) {
-        mScriptEngine = engine;
+    private ShellDropTarget(final IScriptEngineProvider provider) {
+        mScriptEngineProvider = provider;
     }
 
     @Override
@@ -85,7 +86,7 @@ public final class ShellDropTarget extends DropTargetAdapter {
         } else if (event.data instanceof String[]) {
             // drop of external files (eg. from explorer)
             for (final String path : (String[]) event.data)
-                mScriptEngine.executeAsync("include(\"file:/" + new Path(path).toString() + "\");");
+                mScriptEngineProvider.getScriptEngine().executeAsync("include(\"file:/" + new Path(path).toString() + "\");");
 
         } else if (event.data instanceof String) {
             // drop of plain (multiline) text
@@ -102,17 +103,17 @@ public final class ShellDropTarget extends DropTargetAdapter {
 
         } else if (event.data instanceof Object)
             // don't think this happens as even single objects are dropped as Object[]
-            mScriptEngine.executeAsync(event.data);
+            mScriptEngineProvider.getScriptEngine().executeAsync(event.data);
     }
 
     private void execute(final Object element) {
         if (element instanceof IResource)
-            mScriptEngine.executeAsync("include(\"workspace:/" + ((IResource) element).getFullPath().toString() + "\");");
+            mScriptEngineProvider.getScriptEngine().executeAsync("include(\"workspace:/" + ((IResource) element).getFullPath().toString() + "\");");
 
         else if (element instanceof Macro)
-            mScriptEngine.executeAsync("include(\"macro://" + ((Macro) element).getName() + "\");");
+            mScriptEngineProvider.getScriptEngine().executeAsync("include(\"macro://" + ((Macro) element).getName() + "\");");
 
         else
-            mScriptEngine.executeAsync(element);
+            mScriptEngineProvider.getScriptEngine().executeAsync(element);
     }
 }

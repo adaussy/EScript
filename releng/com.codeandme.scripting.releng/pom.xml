@@ -8,6 +8,8 @@
 
 	<properties>
 		<tycho-version>0.18.1</tycho-version>
+
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
 
 	<repositories>
@@ -52,5 +54,7 @@
 		<module>../../engines/org.groovy</module>
 		<module>../../engines/org.jruby</module>
 		<module>../../engines/org.jython</module>
+		<module>../../features/com.codeandme.scripting.feature</module>
+		<module>../com.codeandme.scripting.releng.p2</module>
 	</modules>
 </project>  

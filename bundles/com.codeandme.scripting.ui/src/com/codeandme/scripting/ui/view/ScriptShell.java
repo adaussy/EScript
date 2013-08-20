@@ -10,11 +10,6 @@
  *******************************************************************************/
 package com.codeandme.scripting.ui.view;
 
-import java.io.IOException;
-import java.io.PipedInputStream;
-import java.io.PipedOutputStream;
-import java.io.PrintStream;
-
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.core.runtime.preferences.InstanceScope;
@@ -91,12 +86,6 @@ public class ScriptShell extends ViewPart implements IMacroSupport, IPropertyCha
     private IScriptEngine mScriptEngine;
     private IMemento mInitMemento;
     private ScriptConsole mConsole = null;
-    private final PipedInputStream mDefaultInputStream;
-    private final PipedInputStream mErrorInputStream;
-    private PipedOutputStream mDefaultOutputStream;
-    private PipedOutputStream mErrorOutputStream;
-    private String mResultTarget;
-    private String mErrorTarget;
 
     private MacroComposite mMacroComposite;
 
@@ -117,30 +106,8 @@ public class ScriptShell extends ViewPart implements IMacroSupport, IPropertyCha
         // setup Script engine
         setEngine("com.codeandme.scripting.javascript.rhino");
 
-        // setup local streams
-        mDefaultInputStream = new PipedInputStream();
-        mErrorInputStream = new PipedInputStream();
-
-        try {
-            mDefaultOutputStream = new PipedOutputStream(mDefaultInputStream);
-        } catch (final IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-        try {
-            mErrorOutputStream = new PipedOutputStream(mErrorInputStream);
-        } catch (final IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-
-        configureOutputStreams();
-
         // add dynamic context menu for macros
         MacroContributionFactory.addContextMenu("com.codeandme.commands.javascript.shell.showMacroManager.popup");
-
-        // add dynamic context menu for module loading
-        // ModuleContributionFactory.addContextMenu();
 
         // FIXME add preferences lookup
         Activator.getDefault().getPreferenceStore().addPropertyChangeListener(this);
@@ -150,33 +117,9 @@ public class ScriptShell extends ViewPart implements IMacroSupport, IPropertyCha
      * Configure output streams for RhinoRunner.
      */
     private void configureOutputStreams() {
-
-        final IEclipsePreferences prefs = InstanceScope.INSTANCE.getNode(PreferenceConstants.SHELL_BASE);
-
-        // set stdout stream
-        final String target = prefs.get(PreferenceConstants.TARGET_STDOUT, PreferenceConstants.VALUE_OUTPUT_CONSOLE);
-        if (PreferenceConstants.VALUE_OUTPUT_CONSOLE.equals(target))
-            mScriptEngine.setOutputStream(getConsole().getOutputStream());
-
-        else if (PreferenceConstants.VALUE_OUTPUT_SHELL.equals(target))
-            mScriptEngine.setOutputStream(new PrintStream(mDefaultOutputStream));
-
-        else if (PreferenceConstants.VALUE_OUTPUT_NONE.equals(target))
-            mScriptEngine.setOutputStream(null);
-
-        // set stderr stream
-        mErrorTarget = prefs.get(PreferenceConstants.TARGET_ERRORS, PreferenceConstants.VALUE_OUTPUT_CONSOLE);
-        if (PreferenceConstants.VALUE_OUTPUT_CONSOLE.equals(mErrorTarget))
-            mScriptEngine.setErrorStream(getConsole().getOutputStream());
-
-        else if (PreferenceConstants.VALUE_OUTPUT_SHELL.equals(mErrorTarget))
-            mScriptEngine.setErrorStream(new PrintStream(mErrorOutputStream));
-
-        else if (PreferenceConstants.VALUE_OUTPUT_NONE.equals(mErrorTarget))
-            mScriptEngine.setErrorStream(null);
-
-        // set result stream
-        mResultTarget = prefs.get(PreferenceConstants.TARGET_RESULT, PreferenceConstants.VALUE_OUTPUT_SHELL);
+        // set stdout/stderr stream
+        mScriptEngine.setOutputStream(getConsole().getOutputStream());
+        mScriptEngine.setErrorStream(getConsole().getOutputStream());
     }
 
     /**
@@ -299,7 +242,7 @@ public class ScriptShell extends ViewPart implements IMacroSupport, IPropertyCha
         mInitMemento = null;
 
         // add DND support
-        ShellDropTarget.addDropSupport(mOutputText, mScriptEngine);
+        ShellDropTarget.addDropSupport(mOutputText, this);
 
         // run startup commands
         final IEclipsePreferences prefs = InstanceScope.INSTANCE.getNode(PreferenceConstants.SHELL_BASE);
