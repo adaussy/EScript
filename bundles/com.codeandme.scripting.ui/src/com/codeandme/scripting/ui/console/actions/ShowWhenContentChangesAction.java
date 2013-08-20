@@ -7,6 +7,7 @@
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
+ *     Christian Pontesegger - adaption to EScript project
  *******************************************************************************/
 package com.codeandme.scripting.ui.console.actions;
 

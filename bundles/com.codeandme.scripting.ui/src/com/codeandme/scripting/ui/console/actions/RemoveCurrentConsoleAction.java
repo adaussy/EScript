@@ -1,3 +1,14 @@
+/*******************************************************************************
+ * Copyright (c) 2006 IBM Corporation and others.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *     IBM Corporation - initial API and implementation
+ *     Christian Pontesegger - adaption to EScript project
+ *******************************************************************************/
 package com.codeandme.scripting.ui.console.actions;
 
 import org.eclipse.debug.internal.ui.DebugPluginImages;
@@ -20,19 +31,16 @@ import com.codeandme.scripting.ui.console.ScriptConsole;
  */
 public class RemoveCurrentConsoleAction extends Action implements IExecutionListener {
 
-    private ScriptConsole mConsole;
+    private final ScriptConsole mConsole;
 
-    public RemoveCurrentConsoleAction() {
+    public RemoveCurrentConsoleAction(final ScriptConsole console) {
         super(ConsoleMessages.ConsoleRemoveTerminatedAction_0);
         setToolTipText(ConsoleMessages.ConsoleRemoveTerminatedAction_1);
         PlatformUI.getWorkbench().getHelpSystem().setHelp(this, IDebugHelpContextIds.CONSOLE_REMOVE_LAUNCH);
         setImageDescriptor(DebugPluginImages.getImageDescriptor(IDebugUIConstants.IMG_LCL_REMOVE));
         setDisabledImageDescriptor(DebugPluginImages.getImageDescriptor(IInternalDebugUIConstants.IMG_DLCL_REMOVE));
         setHoverImageDescriptor(DebugPluginImages.getImageDescriptor(IInternalDebugUIConstants.IMG_ELCL_REMOVE));
-    }
 
-    public RemoveCurrentConsoleAction(final ScriptConsole console) {
-        this();
         mConsole = console;
         IScriptEngine engine = mConsole.getScriptEngine();
         if (engine != null)
