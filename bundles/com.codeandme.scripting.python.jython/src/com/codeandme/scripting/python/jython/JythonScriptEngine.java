@@ -11,7 +11,7 @@
 package com.codeandme.scripting.python.jython;
 
 import java.io.InputStream;
-import java.io.PrintStream;
+import java.io.OutputStream;
 
 import org.python.core.PyIgnoreMethodTag;
 import org.python.util.PythonInterpreter;
@@ -65,26 +65,26 @@ public class JythonScriptEngine extends AbstractScriptEngine {
     }
 
     @Override
-    public void setOutputStream(final PrintStream outputStream) {
-        if (mEngine != null)
-            mEngine.setOut(outputStream);
-
+    public void setOutputStream(final OutputStream outputStream) {
         super.setOutputStream(outputStream);
+
+        if (mEngine != null)
+            mEngine.setOut(getOutputStream());
     }
 
     @Override
     public void setInputStream(final InputStream inputStream) {
-        if (mEngine != null)
-            mEngine.setIn(inputStream);
-
         super.setInputStream(inputStream);
+
+        if (mEngine != null)
+            mEngine.setIn(getInputStream());
     }
 
     @Override
-    public void setErrorStream(final PrintStream errorStream) {
-        if (mEngine != null)
-            mEngine.setErr(errorStream);
-
+    public void setErrorStream(final OutputStream errorStream) {
         super.setErrorStream(errorStream);
+
+        if (mEngine != null)
+            mEngine.setErr(getErrorStream());
     }
 }

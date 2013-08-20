@@ -15,12 +15,12 @@ import org.eclipse.ui.PlatformUI;
 
 import com.codeandme.scripting.IScriptEngine;
 import com.codeandme.scripting.IScriptService;
-import com.codeandme.scripting.ui.launching.AbstractLaunchShortcut;
+import com.codeandme.scripting.ui.launching.AbstractLaunchDelegate;
 
 /**
  * Quick launcher for JavaScript files.
  */
-public class LaunchShortcut extends AbstractLaunchShortcut {
+public class Launcher extends AbstractLaunchDelegate {
 
     @Override
     protected IScriptEngine getScriptEngine(final ILaunchConfiguration configuration, final String mode) {

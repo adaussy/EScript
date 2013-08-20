@@ -10,12 +10,15 @@
  *******************************************************************************/
 package com.codeandme.scripting.ui.console.actions;
 
-import org.eclipse.debug.internal.ui.DebugUIPlugin;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
+import org.eclipse.ui.console.IConsole;
+
+import com.codeandme.scripting.ui.Activator;
+import com.codeandme.scripting.ui.preferences.PreferenceConstants;
 
 /**
  * Abstract action for toggling preference to automatically show the console when a streams content changes.
@@ -24,11 +27,16 @@ import org.eclipse.jface.util.PropertyChangeEvent;
  */
 public abstract class ShowWhenContentChangesAction extends Action implements IPropertyChangeListener {
 
+    private final String mConsoleName;
+
     /**
      * Constructs an action to toggle console auto activation preferences
+     * 
+     * @param console
      */
-    public ShowWhenContentChangesAction(final String name) {
+    public ShowWhenContentChangesAction(final String name, final IConsole console) {
         super(name, IAction.AS_CHECK_BOX);
+        mConsoleName = console.getName();
         setToolTipText(name);
         getPreferenceStore().addPropertyChangeListener(this);
         update();
@@ -42,16 +50,20 @@ public abstract class ShowWhenContentChangesAction extends Action implements IPr
     @Override
     public void propertyChange(final PropertyChangeEvent event) {
         String property = event.getProperty();
-        if (property.equals(getKey())) {
+        if (property.equals(getPreferenceKey())) {
             update();
         }
+    }
+
+    private String getPreferenceKey() {
+        return PreferenceConstants.CONSOLE_BASE + "." + mConsoleName + "." + getKey();
     }
 
     protected abstract String getKey();
 
     private void update() {
         IPreferenceStore store = getPreferenceStore();
-        if (store.getBoolean(getKey())) {
+        if (store.getBoolean(getPreferenceKey())) {
             // on
             setChecked(true);
         } else {
@@ -64,7 +76,7 @@ public abstract class ShowWhenContentChangesAction extends Action implements IPr
      * @return
      */
     private IPreferenceStore getPreferenceStore() {
-        return DebugUIPlugin.getDefault().getPreferenceStore();
+        return Activator.getDefault().getPreferenceStore();
     }
 
     /*
@@ -77,7 +89,7 @@ public abstract class ShowWhenContentChangesAction extends Action implements IPr
         IPreferenceStore store = getPreferenceStore();
         boolean show = isChecked();
         store.removePropertyChangeListener(this);
-        store.setValue(getKey(), show);
+        store.setValue(getPreferenceKey(), show);
         store.addPropertyChangeListener(this);
     }
 
@@ -87,5 +99,4 @@ public abstract class ShowWhenContentChangesAction extends Action implements IPr
     public void dispose() {
         getPreferenceStore().removePropertyChangeListener(this);
     }
-
 }

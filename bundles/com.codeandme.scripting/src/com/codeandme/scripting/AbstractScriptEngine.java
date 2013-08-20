@@ -12,6 +12,7 @@ package com.codeandme.scripting;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -134,6 +135,7 @@ public abstract class AbstractScriptEngine extends Job implements IScriptEngine 
                 // DEBUG
                 e.printStackTrace();
                 // end DEBUG
+
                 getErrorStream().println(e.getLocalizedMessage());
 
             } finally {
@@ -207,8 +209,12 @@ public abstract class AbstractScriptEngine extends Job implements IScriptEngine 
     }
 
     @Override
-    public void setOutputStream(final PrintStream outputStream) {
-        mOutStream = outputStream;
+    public void setOutputStream(final OutputStream outputStream) {
+        if (outputStream instanceof PrintStream)
+            mOutStream = (PrintStream) outputStream;
+
+        else
+            mOutStream = new PrintStream(outputStream);
     }
 
     @Override
@@ -227,8 +233,12 @@ public abstract class AbstractScriptEngine extends Job implements IScriptEngine 
     }
 
     @Override
-    public void setErrorStream(final PrintStream errorStream) {
-        mErrorStream = errorStream;
+    public void setErrorStream(final OutputStream errorStream) {
+        if (errorStream instanceof PrintStream)
+            mErrorStream = (PrintStream) errorStream;
+
+        else
+            mErrorStream = new PrintStream(errorStream);
     }
 
     @Override

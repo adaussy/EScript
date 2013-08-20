@@ -10,10 +10,11 @@
  *******************************************************************************/
 package com.codeandme.scripting.ui.console;
 
-import java.io.PrintStream;
-
 import org.eclipse.debug.core.ILaunch;
+import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.resource.ImageDescriptor;
+import org.eclipse.jface.util.IPropertyChangeListener;
+import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.console.ConsolePlugin;
 import org.eclipse.ui.console.IConsole;
@@ -24,8 +25,10 @@ import com.codeandme.scripting.IExecutionListener;
 import com.codeandme.scripting.IScriptEngine;
 import com.codeandme.scripting.IScriptEngineProvider;
 import com.codeandme.scripting.Script;
+import com.codeandme.scripting.ui.Activator;
+import com.codeandme.scripting.ui.preferences.PreferenceConstants;
 
-public class ScriptConsole extends IOConsole implements IExecutionListener, IScriptEngineProvider {
+public class ScriptConsole extends IOConsole implements IExecutionListener, IScriptEngineProvider, IPropertyChangeListener {
 
     public static final String CONSOLE_ACTIVE = "ACTIVE";
 
@@ -42,8 +45,8 @@ public class ScriptConsole extends IOConsole implements IExecutionListener, IScr
         return create(engine.getName(), engine);
     }
 
-    private PrintStream mOutputStream = null;
-    private PrintStream mErrorStream = null;
+    private IOConsoleOutputStream mOutputStream = null;
+    private IOConsoleOutputStream mErrorStream = null;
     private IScriptEngine mEngine;
     private ILaunch mLaunch = null;
 
@@ -57,25 +60,36 @@ public class ScriptConsole extends IOConsole implements IExecutionListener, IScr
         mEngine = engine;
         if (mEngine != null)
             mEngine.addExecutionListener(this);
+
+        initializeStreams();
+
+        Activator.getDefault().getPreferenceStore().addPropertyChangeListener(this);
+    }
+
+    private void initializeStreams() {
+        IPreferenceStore store = Activator.getDefault().getPreferenceStore();
+
+        IOConsoleOutputStream outputStream = getOutputStream();
+        outputStream.setActivateOnWrite(store.getBoolean(PreferenceConstants.CONSOLE_BASE + "." + getName() + "." + PreferenceConstants.CONSOLE_OPEN_ON_OUT));
+
+        IOConsoleOutputStream errorStream = getErrorStream();
+        errorStream.setActivateOnWrite(store.getBoolean(PreferenceConstants.CONSOLE_BASE + "." + getName() + "." + PreferenceConstants.CONSOLE_OPEN_ON_ERR));
     }
 
     public static String getConsoleType() {
         return "Text console type";
     }
 
-    public PrintStream getErrorStream() {
-        if (mErrorStream == null) {
-            IOConsoleOutputStream stream = newOutputStream();
-            // TODO set error stream output color
-            mErrorStream = new PrintStream(stream);
-        }
+    public IOConsoleOutputStream getErrorStream() {
+        if (mErrorStream == null)
+            mErrorStream = newOutputStream();
 
         return mErrorStream;
     }
 
-    public PrintStream getOutputStream() {
+    public IOConsoleOutputStream getOutputStream() {
         if (mOutputStream == null)
-            mOutputStream = new PrintStream(newOutputStream());
+            mOutputStream = newOutputStream();
 
         return mOutputStream;
     }
@@ -87,6 +101,8 @@ public class ScriptConsole extends IOConsole implements IExecutionListener, IScr
 
     @Override
     protected void dispose() {
+        Activator.getDefault().getPreferenceStore().removePropertyChangeListener(this);
+
         if (mEngine != null)
             mEngine.removeExecutionListener(this);
 
@@ -125,5 +141,16 @@ public class ScriptConsole extends IOConsole implements IExecutionListener, IScr
 
     public ILaunch getLaunch() {
         return mLaunch;
+    }
+
+    @Override
+    public void propertyChange(final PropertyChangeEvent event) {
+        String property = event.getProperty();
+
+        if (property.equals(PreferenceConstants.CONSOLE_BASE + "." + getName() + "." + PreferenceConstants.CONSOLE_OPEN_ON_OUT))
+            getOutputStream().setActivateOnWrite((Boolean) event.getNewValue());
+
+        else if (property.equals(PreferenceConstants.CONSOLE_BASE + "." + getName() + "." + PreferenceConstants.CONSOLE_OPEN_ON_ERR))
+            getErrorStream().setActivateOnWrite((Boolean) event.getNewValue());
     }
 }

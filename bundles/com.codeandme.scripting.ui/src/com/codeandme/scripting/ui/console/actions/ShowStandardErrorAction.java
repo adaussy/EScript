@@ -10,12 +10,14 @@
  *******************************************************************************/
 package com.codeandme.scripting.ui.console.actions;
 
-import org.eclipse.debug.internal.ui.DebugUIPlugin;
 import org.eclipse.debug.internal.ui.IDebugHelpContextIds;
 import org.eclipse.debug.internal.ui.IInternalDebugUIConstants;
-import org.eclipse.debug.internal.ui.preferences.IDebugPreferenceConstants;
 import org.eclipse.debug.ui.DebugUITools;
 import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.console.IConsole;
+
+import com.codeandme.scripting.ui.Activator;
+import com.codeandme.scripting.ui.preferences.PreferenceConstants;
 
 /**
  * Toggles preference show the console when output is written to standard error stream.
@@ -26,17 +28,18 @@ public class ShowStandardErrorAction extends ShowWhenContentChangesAction {
 
     /**
      * Constructs an action to toggle console auto activation preferences
+     * 
+     * @param console
      */
-    public ShowStandardErrorAction() {
-        super(ConsoleMessages.ShowStandardErrorAction_0);
-        setId(DebugUIPlugin.getUniqueIdentifier() + ".ShowWhenStderrChangesAction"); //$NON-NLS-1$
+    public ShowStandardErrorAction(final IConsole console) {
+        super(ConsoleMessages.ShowStandardErrorAction_0, console);
+        setId(Activator.PLUGIN_ID + ".ShowWhenStderrChangesAction"); //$NON-NLS-1$
         PlatformUI.getWorkbench().getHelpSystem().setHelp(this, IDebugHelpContextIds.SHOW_WHEN_STDERR_CHANGES_ACTION);
         setImageDescriptor(DebugUITools.getImageDescriptor(IInternalDebugUIConstants.IMG_ELCL_STANDARD_ERR));
     }
 
     @Override
     protected String getKey() {
-        return IDebugPreferenceConstants.CONSOLE_OPEN_ON_ERR;
+        return PreferenceConstants.CONSOLE_OPEN_ON_ERR;
     }
-
 }

@@ -12,6 +12,7 @@ package com.codeandme.scripting;
 
 import java.io.File;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.PrintStream;
 import java.io.Reader;
 
@@ -66,15 +67,15 @@ public interface IScriptEngine {
      * @param outputStream
      *            default output stream
      */
-    void setOutputStream(final PrintStream outputStream);
+    void setOutputStream(final OutputStream outputStream);
 
     /**
      * Set the default error stream for the interpreter.
      * 
-     * @param errorStream
+     * @param outputStream
      *            default error stream
      */
-    void setErrorStream(final PrintStream errorStream);
+    void setErrorStream(final OutputStream outputStream);
 
     /**
      * Set the default input stream for the interpreter.
@@ -152,5 +153,5 @@ public interface IScriptEngine {
      * 
      * @return engine name
      */
-    String getName();	
+    String getName();
 }

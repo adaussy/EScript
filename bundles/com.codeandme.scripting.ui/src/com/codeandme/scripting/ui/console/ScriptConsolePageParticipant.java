@@ -111,8 +111,8 @@ public class ScriptConsolePageParticipant implements IConsolePageParticipant, IS
         fRemoveAllTerminated = new ConsoleRemoveAllTerminatedAction();
         // FIXME implement
         // fTerminate = new ConsoleTerminateAction(page.getSite().getWorkbenchWindow(), fConsole);
-        fStdOut = new ShowStandardOutAction();
-        fStdErr = new ShowStandardErrorAction();
+        fStdOut = new ShowStandardOutAction(console);
+        fStdErr = new ShowStandardErrorAction(console);
 
         fView = (IConsoleView) fPage.getSite().getPage().findView(IConsoleConstants.ID_CONSOLE_VIEW);
 

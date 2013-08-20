@@ -13,23 +13,20 @@ package com.codeandme.scripting.ui.preferences;
 /**
  * Constant definitions for plug-in preferences.
  */
-public final class PreferenceConstants {
+public interface PreferenceConstants {
 
-	public static final String VALUE_OUTPUT_CONSOLE = "Console";
-	public static final String VALUE_OUTPUT_SHELL = "Shell";
-	public static final String VALUE_OUTPUT_NONE = "None";
+    String VALUE_OUTPUT_CONSOLE = "Console";
+    String VALUE_OUTPUT_SHELL = "Shell";
+    String VALUE_OUTPUT_NONE = "None";
 
-	public static final String SHELL_BASE = "com.codeandme.scripting.shell.prefs";
-	public static final String TARGET_STDOUT = "com.codeandme.scripting.shell.prefs.stdout";
-	public static final String TARGET_RESULT = "com.codeandme.scripting.shell.prefs.result";
-	public static final String TARGET_ERRORS = "com.codeandme.scripting.shell.prefs.errors";
+    String SHELL_BASE = "com.codeandme.scripting.shell.prefs";
+    String TARGET_STDOUT = "com.codeandme.scripting.shell.prefs.stdout";
+    String TARGET_RESULT = "com.codeandme.scripting.shell.prefs.result";
+    String TARGET_ERRORS = "com.codeandme.scripting.shell.prefs.errors";
 
-	public static final String INIT_COMMANDS = "com.codeandme.scripting.shell.prefs.initCommands";
+    String INIT_COMMANDS = "com.codeandme.scripting.shell.prefs.initCommands";
 
-	/**
-	 * Hidden constructor. Never used.
-	 */
-	@Deprecated
-	private PreferenceConstants() {
-	}
+    String CONSOLE_BASE = "com.codeandme.scripting.console.prefs";
+    String CONSOLE_OPEN_ON_OUT = "consoleOpenOnOut";
+    String CONSOLE_OPEN_ON_ERR = "consoleOpenOnErr";
 }

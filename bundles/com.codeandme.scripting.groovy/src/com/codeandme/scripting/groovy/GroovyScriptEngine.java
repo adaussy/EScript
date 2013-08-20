@@ -5,7 +5,7 @@ import groovy.lang.GroovyShell;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.PrintStream;
+import java.io.OutputStream;
 
 import com.codeandme.scripting.AbstractScriptEngine;
 import com.codeandme.scripting.IModifiableScriptEngine;
@@ -35,19 +35,20 @@ public class GroovyScriptEngine extends AbstractScriptEngine implements IModifia
     }
 
     @Override
-    public void setOutputStream(final PrintStream outputStream) {
-        if (mEngine != null)
-            mEngine.setProperty("out", outputStream);
-
+    public void setOutputStream(final OutputStream outputStream) {
         super.setOutputStream(outputStream);
+
+        if (mEngine != null)
+            mEngine.setProperty("out", getOutputStream());
+
     }
 
     @Override
-    public void setErrorStream(final PrintStream errorStream) {
-        if (mEngine != null)
-            mEngine.setProperty("err", errorStream);
-
+    public void setErrorStream(final OutputStream errorStream) {
         super.setOutputStream(errorStream);
+
+        if (mEngine != null)
+            mEngine.setProperty("err", getErrorStream());
     }
 
     @Override

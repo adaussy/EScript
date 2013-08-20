@@ -27,7 +27,7 @@
    <extension
          point="org.eclipse.debug.ui.launchShortcuts">
       <shortcut
-            class="com.codeandme.scripting.javascript.rhino.ui.launching.LaunchShortcut"
+            class="com.codeandme.scripting.javascript.rhino.ui.launching.Launcher"
             description="Run a JavaScript file"
             icon="images/rhino.gif"
             id="com.codeandme.launchShortcut.rhino"
@@ -59,7 +59,7 @@
    <extension
          point="org.eclipse.debug.core.launchConfigurationTypes">
       <launchConfigurationType
-            delegate="com.codeandme.scripting.javascript.rhino.ui.launching.LaunchDelegate"
+            delegate="com.codeandme.scripting.javascript.rhino.ui.launching.Launcher"
             id="com.codeandme.launchConfigurationType.rhino"
             modes="run,debug"
             name="EScript JavaScript (Rhino)"
